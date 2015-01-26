@@ -471,13 +471,16 @@ function Envoi_Data_SIOC_slow()
 		local ADI_FI = 50005000 + 10000 * ADI_FF + ADI_IDX
 		envoyerInfo(146,ADI_FI)	
 		
-		local Altirad_IDX = MainPanel:get_argument_value(31) * 1000 -- Index Setting
-		local Altirad_F = math.floor(MainPanel:get_argument_value(30)) -- Alti Rad low alti Alarme
-		local Altirad_O = math.floor(MainPanel:get_argument_value(35)) -- Alti Rad On Button
+		-- ALTIRAD : Low Index Setting sur Canal "Altirad_DX"
+		envoyerInfo(124,50005000 + MainPanel:get_argument_value(31) * 1000) 
 		
-		local Altirad_FI = 50005000 + 100000 * Altirad_F + 10000 * Altirad_O + Altirad_IDX
-		envoyerInfo(122,Altirad_FI)
+		-- Alarme Low et High , Flag on/off
+		local Altirad_HF = 0 -- Alti Rad high alti Alarme (pas utilisé sur Mi-8)
+		local Altirad_LF = math.floor(MainPanel:get_argument_value(30)+0.2) -- Alti Rad low alti Alarme
+		local Altirad_O = MainPanel:get_argument_value(35) -- Alti Rad On Button
+		envoyerInfo(126,555 + Altirad_HF * 100 + Altirad_LF * 10 + Altirad_O)
 		
+				
 		
 		-- ============== Parametres Moteur (lents) ====================================================
 		
@@ -630,12 +633,12 @@ function Envoi_Data_SIOC_slow()
 		local DA_100 = math.floor(MainPanel:get_argument_value(799) * 10) -- Diss15 Drift Angle KM
 		local DA_10 = math.floor(MainPanel:get_argument_value(800) * 10)
 		local DA_1 = math.floor(MainPanel:get_argument_value(801) * 100)
-		local DA_F = lMainPanel:get_argument_value(802)
+		local DA_F = MainPanel:get_argument_value(802)
 		
 		local FP_100 = math.floor(MainPanel:get_argument_value(806) * 10) -- Diss15 Flight Path KM
 		local FP_10 = math.floor(MainPanel:get_argument_value(807) * 10) 
 		local FP_1 = math.floor(MainPanel:get_argument_value(808) * 100) 
-		local FP_F = lMainPanel:get_argument_value(805)
+		local FP_F = MainPanel:get_argument_value(805)
 		
 		local MA_100 = math.floor(MainPanel:get_argument_value(811) * 10) -- Diss15 Map Angle
 		local MA_10 = math.floor(MainPanel:get_argument_value(812) * 10) 
@@ -709,6 +712,10 @@ function Envoi_Data_SIOC_slow()
 		local ARKUD = 55500555 + ARKUD_S8 * 10000000 + ARKUD_S7 * 10000000 + ARKUD_S6 * 1000000 + ARKUD_S5 * 10000 + ARKUD_S4 * 1000 + ARKUD_S3 * 100 + ARKUD_S2 * 10 + ARKUD_S1
 		
 		envoyerInfo(660,ARKUD)   -- Variable Switch ARK-UD
+		
+		-- ============== Parametre Selection Ark9-ArkUD  =======================================================		
+		-- Position Switches MW/VHF
+		envoyerInfo(668,5 + math.floor(MainPanel:get_argument_value(858)+0.2)) 
 		
 		
 		-- ============== Status Armement ==================================================================
