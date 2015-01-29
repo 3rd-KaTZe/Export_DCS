@@ -338,10 +338,17 @@ function Envoi_Data_SIOC_fast()
 		
 		-- ============== Clock =========================================================================
 		-- Inutile, time est récupéré avec LoGetModelTime()
+		
+		
+		-- ============== Debug =========================================================================
+		envoyerInfo(20,lMainPanel:get_argument_value(342)*1000) 
+		envoyerInfo(21,lMainPanel:get_argument_value(343)*1000) 
+		envoyerInfo(22,lMainPanel:get_argument_value(344)*1000) 
+		envoyerInfo(23,lMainPanel:get_argument_value(345)*1000) 
 
 		-- ============== Contrôle de l'appareil =========================================================================		
 		--envoyerInfo(123,MainPanel:get_argument_value(191) * 1000)-- Position Collectif , WIP pour Gilles : a mettre à jour pour Mi-8
-		envoyerInfo(22,lMainPanel:get_argument_value(859)*1000)
+		--envoyerInfo(22,lMainPanel:get_argument_value(859)*1000)
 		
 		
 		-- ============== Parametres de Vol ===============================================================

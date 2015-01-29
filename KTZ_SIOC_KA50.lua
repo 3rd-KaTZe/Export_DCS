@@ -219,32 +219,51 @@ function Reception_SIOC_Cmd()
 						-- Type interrupteur deux voies, val = val * 1000
 						-- Envoi à LockOn, commande Device, Bouton + 3000 , Argument
 						--GetDevice(device):performClickableAction(3000+bouton,val*1000)
-						GetDevice(device):performClickableAction(3000+bouton,val*1)
+						GetDevice(device):performClickableAction(3000+bouton,val)
 						
 					end
 					
 					if typbouton == 2 then
 						-- Type interrupteur deux voies, avec capot , val = val * 1000
 						-- On ouvre, bascule, ferme
-						GetDevice(device):performClickableAction(3000+bouton+1,val*1000)
-						GetDevice(device):performClickableAction(3000+bouton,val*1)
-						GetDevice(device):performClickableAction(3000+bouton+1,val*1000)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
 						
 					end
 					
+					-----------------------------------------------------------------
+					-- Type 3 : 3 positions Bas/Mid/Haut
 					if typbouton == 3 then
-						-- Type interrupteur press bouton , val = val * 100
-						-- On envoie 1000 puis zero
-						GetDevice(device):performClickableAction(3000+bouton,val*100)
-						GetDevice(device):performClickableAction(3000+bouton,val*0)
-												
+						-- Type interrupteur 3 positions  -1 , 0 , +1
+						-- On décale de -1 i.e. 0>>-1 , 1>>0 , 2>>1
+						GetDevice(device):performClickableAction(3000+bouton,(val-1))
+																		
 					end
 					
+					-----------------------------------------------------------------
+					-- Type 4 : Rotateur Multiple (Décimal) ... 
 					if typbouton == 4 then
+					
 						-- Type interrupteur rotary , 0.0 , 0.1 , 0.2 , 0.3 , ...
 						-- On envoie des valeur de 0 à X
-						GetDevice(device):performClickableAction(3000+bouton,val/10)
-
+					
+						if pas < 2 then  -- Pas à 0 ou 1, incrément par 0.1
+							GetDevice(device):performClickableAction(3000+bouton,val/10)
+						end
+						
+						if pas == 2 then -- Pas à 2 , incrément par 0.05
+							GetDevice(device):performClickableAction(3000+bouton,val/20)
+						end
+					end
+					
+					-----------------------------------------------------------------
+					-- Type 5 : Press Bouton ... commande suivie de mise à zero
+					if typbouton == 5 then
+						-- Type interrupteur press bouton , val = val * 1000
+						-- On envoie 1000 puis zero
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton,val*0)
 												
 					end
 				
@@ -282,8 +301,10 @@ function Envoi_Data_SIOC_fast()
 		
 		-- ============== Clock =========================================================================
 		-- Inutile, time est récupéré avec LoGetModelTime()
-		--envoyerInfo(20,lMainPanel:get_argument_value(68)*24)
-		--envoyerInfo(21,lMainPanel:get_argument_value(69)*60)
+		--envoyerInfo(20,lMainPanel:get_argument_value(167)*1000)
+		--envoyerInfo(21,lMainPanel:get_argument_value(48)*1000)
+		--envoyerInfo(22,lMainPanel:get_argument_value(173)*1000)
+		--envoyerInfo(23,lMainPanel:get_argument_value(177)*1000)
 		--envoyerInfo(22,lMainPanel:get_argument_value(70)*60)
 		
 		-- ============== Parametres de Vol ===============================================================
@@ -347,27 +368,13 @@ function Envoi_Data_SIOC_fast()
 		
 		
 		-- ============== Parametres APU ===================================================================
-		envoyerInfo(300,lMainPanel:get_argument_value(6) * 900)-- Température APU : max 900°
+		envoyerInfo(300,50005000 + lMainPanel:get_argument_value(6) * 900)-- Température APU : max 900°
 
 		
 				
 		-- ============== Position de l'Avion ===============================================================	
 
-		-- Pilototo --------------------------------------------------------------------------------
-		local AP_B = math.floor(lMainPanel:get_argument_value(330) + 0.2)		-- K : Bank
-		local AP_P = math.floor(lMainPanel:get_argument_value(331) + 0.2)		-- T : Pitch
-		local AP_H = math.floor(lMainPanel:get_argument_value(332) + 0.2)		-- H : HDG
-		local AP_A = math.floor(lMainPanel:get_argument_value(333) + 0.2)		-- B : Alt
-		local AP_FD = math.floor(lMainPanel:get_argument_value(334) + 0.2)		--  : FD
-
-		local AP = 55555 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
-		envoyerInfo(552,AP)
-
 		
-		local AP2_H = lMainPanel:get_argument_value(175)		--  : Hover
-		local AP2_D = lMainPanel:get_argument_value(172)		--  : Descente		
-		local AP2 = 55 + AP2_D * 10 + AP2_H 
-		envoyerInfo(554,AP2)
 
 
 		--envoyerInfo(569,lMainPanel:get_argument_value(82)*1000)		--  : RAlt Danger				
@@ -546,22 +553,22 @@ function Envoi_Data_SIOC_slow()
 		local TGT_4 = MainPanel:get_argument_value(439)	-- Voyant TGT For
 		local TGT_5 = MainPanel:get_argument_value(441)	-- Voyant TGT Clear	
 		local TGT = 55555 + TGT_1 + 10000 + TGT_2 + 1000 + TGT_3 + 100 + TGT_4 + 10 +TGT_5
-		envoyerInfo(1040,TGT)
+		envoyerInfo(1018,TGT)
 		
 		-- =============== DataLink ======================================================
-		local Datalink_T1 = MainPanel:get_argument_value(21)-- Target1
-		local Datalink_T2 = MainPanel:get_argument_value(22)-- Target2
-		local Datalink_T3 = MainPanel:get_argument_value(23)-- Target3
-		local Datalink_T4 = MainPanel:get_argument_value(50)-- Target4
-		local Datalink_W1 = MainPanel:get_argument_value(17)-- Wing1
-		local Datalink_W2 = MainPanel:get_argument_value(18)-- Wing2
-		local Datalink_W3 = MainPanel:get_argument_value(19)-- Wing3
-		local Datalink_W4 = MainPanel:get_argument_value(20)-- Wing4
-		local Datalink_W5 = MainPanel:get_argument_value(16)-- All
-		local Datalink_V = MainPanel:get_argument_value(15) -- Vierge
-		local Datalink_C = MainPanel:get_argument_value(161)-- Clear
-		local Datalink_I = MainPanel:get_argument_value(150)-- Ingress
-		local Datalink_S = MainPanel:get_argument_value(159)-- SendMem
+		local Datalink_T1 = MainPanel:get_argument_value(21)*10-- Target1
+		local Datalink_T2 = MainPanel:get_argument_value(22)*10-- Target2
+		local Datalink_T3 = MainPanel:get_argument_value(23)*10-- Target3
+		local Datalink_T4 = MainPanel:get_argument_value(50)*10-- Target4
+		local Datalink_W1 = MainPanel:get_argument_value(17)*10-- Wing1
+		local Datalink_W2 = MainPanel:get_argument_value(18)*10-- Wing2
+		local Datalink_W3 = MainPanel:get_argument_value(19)*10-- Wing3
+		local Datalink_W4 = MainPanel:get_argument_value(20)*10-- Wing4
+		local Datalink_W5 = MainPanel:get_argument_value(16)*10-- All
+		local Datalink_V = MainPanel:get_argument_value(15)*10-- Vierge
+		local Datalink_C = MainPanel:get_argument_value(161)*10-- Clear
+		local Datalink_I = MainPanel:get_argument_value(150)*10-- Ingress
+		local Datalink_S = MainPanel:get_argument_value(159)*10-- SendMem
 
 		local Datalink_L1 = 5555 + Datalink_T1 * 1000 + Datalink_T2 * 100 + Datalink_T3 * 10 + Datalink_T4
 		local Datalink_L2 = 55555 + Datalink_W1 * 10000 + Datalink_W2 * 1000 + Datalink_W3 * 100 + Datalink_W4 * 10 + Datalink_W5
@@ -574,9 +581,39 @@ function Envoi_Data_SIOC_slow()
 		
 		-- Scan du Canon sélectionné ------------------------------------------------------------------------
 		
+		-- Pilototo --------------------------------------------------------------------------------
+		local AP_B = math.floor(MainPanel:get_argument_value(330)*10)		-- K : Bank
+		local AP_P = math.floor(MainPanel:get_argument_value(331)*10)		-- T : Pitch
+		local AP_H = math.floor(MainPanel:get_argument_value(332)*10)		-- H : HDG
+		local AP_A = math.floor(MainPanel:get_argument_value(333)*10)		-- B : Alt
+		local AP_FD = math.floor(MainPanel:get_argument_value(334)*10)		--  : FD
+
+		local AP = 55555 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
+		envoyerInfo(552,AP)
+
+		
+		local AP2_H = MainPanel:get_argument_value(175)		--  : Hover
+		local AP2_D = MainPanel:get_argument_value(172)		--  : Descente		
+		local AP2 = 55 + AP2_D * 10 + AP2_H 
+		envoyerInfo(554,AP2)
+		
 		
 		
 		-- Scan du Panel Armement ----------------------------------------------------------------------
+		local Wpn_S1 = MainPanel:get_argument_value(388)-- Select W1
+		local Wpn_S2 = MainPanel:get_argument_value(389)-- Select W2
+		local Wpn_S3 = MainPanel:get_argument_value(390)-- Select W3
+		local Wpn_S4 = MainPanel:get_argument_value(391)-- Select W4
+		local Wpn_P1 = MainPanel:get_argument_value(392)-- Presence W1
+		local Wpn_P2 = MainPanel:get_argument_value(393)-- Presence W2
+		local Wpn_P3 = MainPanel:get_argument_value(394)-- Presence W3
+		local Wpn_P4 = MainPanel:get_argument_value(395)-- Presence W4
+		local Wpn = 55555555 + Wpn_S1 * 10000000 + Wpn_S2 * 1000000 + Wpn_S3 * 100000 + Wpn_S4 * 10000 + Wpn_P1 * 1000 + Wpn_P2 * 100 + Wpn_P3 * 10 + Wpn_P4
+		envoyerInfo(1015,Wpn)
+		
+		-- Export des voyants Master Arm et Canon ----------------------------------------------------------------------
+		envoyerInfo(1016,55 + MainPanel:get_argument_value(177)*10 + MainPanel:get_argument_value(167))
+		
 		
 		
 		-- ============== Module de Navigation =========================================================================		
@@ -620,8 +657,8 @@ socket = require("socket")
 --- logCom("LogetMissionStartTime")	
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- *** Initialisation des déclencheurs rapides et lents *** -------------------------
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1
