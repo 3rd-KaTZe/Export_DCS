@@ -614,14 +614,178 @@ function Envoi_Data_SIOC_slow()
 		-- Export des voyants Master Arm et Canon ----------------------------------------------------------------------
 		envoyerInfo(1016,55 + MainPanel:get_argument_value(177)*10 + MainPanel:get_argument_value(167))
 		
+		-- Export des quantités Rocket et Canon ----------------------------------------------------------------------
+		local wpncnt, cannoncnt = get_Weapon()
+		if wpncnt and cannoncnt then
+			envoyerInfo(1014,50005000+ wpncnt * 10000 + cannoncnt)
+		end
+		
+		-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
+		local pvi1, pvi2, pvi3, pvi4 = get_PVI800()
+		if not pvi1 then pvi1 = 0 end
+		if not pvi2 then pvi2 = 0 end
+		if not pvi3 then pvi3 = 0 end
+		if not pvi4 then pvi4 = 0 end
+		
+			envoyerInfo(171,pvi1)
+			envoyerInfo(172,pvi2)
+			envoyerInfo(173, 50005000 + pvi3 * 10000 + pvi4)
+		
+
+		
+		
+		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
+		local uv26 = get_UV26()
+		if uv26 then 
+			envoyerInfo(1040,uv26)
+		end
+		
+		
+		-- ============== Lecture de l'Abris =========================================================================	
+				
+		local Abris_on = MainPanel:get_argument_value(130)-- On/Off
+				
+		local bout1,bout2,bout3,bout4,bout5  = get_Abris()
+		
+		if bout1 and bout2 and bout3 and bout4 and bout5 then
+			
+			local c1 = abris_ref(bout1)
+			--logCom(c1)
+			local c2 = abris_ref(bout2)
+			--logCom(c2)
+			local c3 = abris_ref(bout3)
+			--logCom(c3)
+			local c4 = abris_ref(bout4)
+			--logCom(c4)
+			local c5 = abris_ref(bout5)
+			
+			envoyerInfo(731,50005000 + c1 * 10000 + c2)
+			envoyerInfo(732,50005000 + c3 * 10000 + c4)
+			envoyerInfo(733,50005000 + Abris_on * 10000 + c5)
+		
+		end
+			
+			
+			
+		
+end
+		
 		
 		
 		-- ============== Module de Navigation =========================================================================		
 		-- Module de Navigation
 		
-		-- ============== Module Alarme ==================================================================================		
+		-- ============== Test export text ==================================================================================	
+	
 		
-		
+
+
+function abris_ref(item)
+
+	-- liste complète , problème caractère /\
+	-- local abrismenu = {"/\","\/",">",">>","ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST"	,"OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
+
+
+	local abrismenu = {"ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST","OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
+  
+	local count
+	count = 0
+	
+	for ii,xx in pairs(abrismenu) do
+		if item == xx then
+		--logCom(item)
+		--logCom(ii)
+		return ii 
+		end
+	end
+	
+end
+
+
+function parse_indication(indicator_id)
+	local ret = {}
+	local li = list_indication(indicator_id)
+	if li == "" then return nil end
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+        local name, value = m()
+        if not name then break end
+		ret[name] = value
+	end
+	return ret
+end
+
+function get_UV26()
+-- Fonction de lecture de l'afficheur de l'UV26
+
+	local UV26 = parse_indication(7)
+			if not UV26 then
+				local emptyline = string.format("%20s", "") -- 20 spaces
+				return emptyline
+			
+			else 
+			local txt = UV26["txt_digits"]
+				return txt
+			end
+end
+
+function get_Weapon()
+-- Fonction de lecture du nombre de munitions restantes
+
+	local weapon_data = parse_indication(6)
+			if not weapon_data then
+				local emptyline = string.format("%20s", "") -- 20 spaces
+				--local emptyline = "miaou"
+				return emptyline, emptyline
+			
+			else 
+				local weap_count = weapon_data["txt_weap_count"]
+				local cannon_count = weapon_data["txt_cannon_count"]
+				return weap_count,cannon_count
+										
+			end
+end
+
+function get_PVI800()
+-- Fonction de l'afficheur PVI
+
+	local pvi_data = parse_indication(5)
+			if not pvi_data then
+				--local emptyline = string.format("%20s", "") -- 20 spaces
+				local emptyline = "miaou"
+				return emptyline, emptyline
+			
+			else 
+				local pvi_1 = pvi_data["txt_VIT"]
+				local pvi_2 = pvi_data["txt_NIT"]
+				local pvi_3 = pvi_data["txt_OIT_PPM"]
+				local pvi_4 = pvi_data["txt_OIT_NOT"]
+				
+				return pvi_1 , pvi_2 , pvi_3 , pvi_4
+										
+			end
+end
+
+function get_Abris()
+-- fonction de lecture des codes des 5 boutons de l'Abris
+
+	local abris_data = parse_indication(3)
+			if not abris_data then
+				local emptyline = "Miaou"
+				--local emptyline = string.format("%20s", "") -- 20 spaces
+				-- On retourne ligne vide pour les 5 bouton
+				return emptyline, emptyline, emptyline, emptyline, emptyline
+			
+			else 
+				local b1 = abris_data["button1"]
+				local b2 = abris_data["button2"]
+				local b3 = abris_data["button3"]
+				local b4 = abris_data["button4"]
+				local b5 = abris_data["button5"]
+				
+				return b1,b2,b3,b4,b5
+										
+			end
 end
 
 
