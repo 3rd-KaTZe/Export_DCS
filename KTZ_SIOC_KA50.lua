@@ -612,13 +612,32 @@ function Envoi_Data_SIOC_slow()
 		envoyerInfo(1015,Wpn)
 		
 		-- Export des voyants Master Arm et Canon ----------------------------------------------------------------------
-		envoyerInfo(1016,55 + MainPanel:get_argument_value(177)*10 + MainPanel:get_argument_value(167))
+		-- Export des switch réglage Canon ----------------------------------------------------------------------
+				
+		local Manauto = MainPanel:get_argument_value(403)
+		local Burst = math.floor(MainPanel:get_argument_value(400)*10 + 0.2)
+		local HeApi = MainPanel:get_argument_value(399)
+		local Rof = MainPanel:get_argument_value(398)
+		
+		local Cannon = MainPanel:get_argument_value(177)
+		local MasterArm = MainPanel:get_argument_value(167)
+		
+		envoyerInfo(1020,555555 + Manauto * 100000 + Burst * 10000 + HeApi * 1000 + Rof * 100 + Cannon * 10 + MasterArm)
+		
+	
 		
 		-- Export des quantités Rocket et Canon ----------------------------------------------------------------------
 		local wpncnt, cannoncnt = get_Weapon()
 		if wpncnt and cannoncnt then
 			envoyerInfo(1014,50005000+ wpncnt * 10000 + cannoncnt)
 		end
+		
+		-- Export des switch réglage cannon ----------------------------------------------------------------------
+		
+		
+		
+		
+		
 		
 		-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
 		local pvi1, pvi2, pvi3, pvi4 = get_PVI800()
