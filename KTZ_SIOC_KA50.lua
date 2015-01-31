@@ -664,25 +664,41 @@ function Envoi_Data_SIOC_slow()
 				
 		local Abris_on = MainPanel:get_argument_value(130)-- On/Off
 				
+		local c1 = 0
+		local c2 = 0
+		local c3 = 0
+		local c4 = 0
+		local c5 = 0
+		
 		local bout1,bout2,bout3,bout4,bout5  = get_Abris()
 		
-		if bout1 and bout2 and bout3 and bout4 and bout5 then
+		if bout1 then 
+			c1 = abris_ref(bout1)
+		end
+		
+		if bout2 then 
+			c2 = abris_ref(bout2)
+		end
+		
+		if bout3 then 
+			c3 = abris_ref(bout3)
+		end
+		
+		if bout4 then 
+			c4 = abris_ref(bout4)
+		end
+		
+		if bout5 then 
+			c5 = abris_ref(bout5)
+		end
+		
 			
-			local c1 = abris_ref(bout1)
-			--logCom(c1)
-			local c2 = abris_ref(bout2)
-			--logCom(c2)
-			local c3 = abris_ref(bout3)
-			--logCom(c3)
-			local c4 = abris_ref(bout4)
-			--logCom(c4)
-			local c5 = abris_ref(bout5)
-			
+					
 			envoyerInfo(731,50005000 + c1 * 10000 + c2)
 			envoyerInfo(732,50005000 + c3 * 10000 + c4)
 			envoyerInfo(733,50005000 + Abris_on * 10000 + c5)
 		
-		end
+		
 			
 			
 			
@@ -705,7 +721,7 @@ function abris_ref(item)
 	-- local abrismenu = {"/\","\/",">",">>","ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST"	,"OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
 
 
-	local abrismenu = {"ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST","OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
+	local abrismenu = {"ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST","OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT",""}
   
 	local count
 	count = 0
