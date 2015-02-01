@@ -728,7 +728,30 @@ function Envoi_Data_SIOC_slow()
 		-- ============== Status Armement ==================================================================
 
 		-- Scan du Canon sélectionné -------------------------------------------------------------------
-		-- Scan du Panel Armement ----------------------------------------------------------------------		
+		-- Scan du Panel Armement ----------------------------------------------------------------------	
+
+
+		-- UV-26 -------------------------------------------------------------------		
+		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
+		local uv26 = get_UV26()
+		local luv = string.len (uv26)
+						
+		if luv == 0 then 
+			uv26 = 0
+		end
+		
+		envoyerInfo(1040,5000 + uv26)
+			
+		
+		
+			local UV_On = math.floor(MainPanel:get_argument_value(910) + 0.2)  -- 0 ou 1
+			local LedLeft = MainPanel:get_argument_value(892)
+			local LedRight = MainPanel:get_argument_value(891)
+			local Side_SW = math.floor(MainPanel:get_argument_value(859) * 2 + 0.2)  -- 0 ou 0.5 ou 1
+			local Num_SW = math.floor(MainPanel:get_argument_value(913) + 0.2 )  -- 0 ou 1
+			
+			envoyerInfo(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
+			
 				
 				
 		
@@ -738,8 +761,36 @@ function Envoi_Data_SIOC_slow()
 		
 		
 end
-	
 
+-- Fonction d'extraction des informations des zones de texte	
+function parse_indication(indicator_id)
+	local ret = {}
+	local li = list_indication(indicator_id)
+	if li == "" then return nil end
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+        local name, value = m()
+        if not name then break end
+		ret[name] = value
+	end
+	return ret
+end
+
+function get_UV26()
+-- Fonction de lecture de l'afficheur de l'UV26 (ID5 sur le Mi-8)
+
+	local UV26 = parse_indication(5)
+			if not UV26 then
+				local emptyline = 0 
+				return emptyline
+			
+			else 
+			local txt = UV26["txt_digits"]
+								
+				return txt
+				
+			end
+end
 
 ---- *************************************************************************** Main Program ********************************************************************	
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -771,8 +822,8 @@ socket = require("socket")
 
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- *** Initialisation des déclencheurs rapides et lents *** -------------------------
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1

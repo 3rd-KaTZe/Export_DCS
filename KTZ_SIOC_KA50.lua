@@ -656,8 +656,21 @@ function Envoi_Data_SIOC_slow()
 		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
 		local uv26 = get_UV26()
 		if uv26 then 
-			envoyerInfo(1040,uv26)
+			envoyerInfo(1040,5000 + uv26)
 		end
+		
+			local LedLeft = MainPanel:get_argument_value(541)
+			local LedRight = MainPanel:get_argument_value(542)
+			local Side_SW = math.floor(MainPanel:get_argument_value(36) * 10 + 0.2)  -- 0 ou 0.1 ou 0.2
+			local Num_SW = math.floor(MainPanel:get_argument_value(37) * 10 + 0.2)  -- 0 ou 0.1
+			
+			envoyerInfo(1042, 5555 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
+			
+			envoyerInfo(1046,MainPanel:get_argument_value(36)*1000)
+			envoyerInfo(1047,MainPanel:get_argument_value(37)*1000)
+			
+		
+		
 		
 		
 		-- ============== Lecture de l'Abris =========================================================================	
@@ -755,7 +768,7 @@ function get_UV26()
 
 	local UV26 = parse_indication(7)
 			if not UV26 then
-				local emptyline = string.format("%20s", "") -- 20 spaces
+				local emptyline = 0
 				return emptyline
 			
 			else 
@@ -769,7 +782,7 @@ function get_Weapon()
 
 	local weapon_data = parse_indication(6)
 			if not weapon_data then
-				local emptyline = string.format("%20s", "") -- 20 spaces
+				local emptyline = 0 --string.format("%20s", "") -- 20 spaces
 				--local emptyline = "miaou"
 				return emptyline, emptyline
 			
@@ -787,7 +800,7 @@ function get_PVI800()
 	local pvi_data = parse_indication(5)
 			if not pvi_data then
 				--local emptyline = string.format("%20s", "") -- 20 spaces
-				local emptyline = "miaou"
+				local emptyline = 0 --"miaou"
 				return emptyline, emptyline
 			
 			else 
@@ -806,7 +819,7 @@ function get_Abris()
 
 	local abris_data = parse_indication(3)
 			if not abris_data then
-				local emptyline = "Miaou"
+				local emptyline = 0 --"Miaou"
 				--local emptyline = string.format("%20s", "") -- 20 spaces
 				-- On retourne ligne vide pour les 5 bouton
 				return emptyline, emptyline, emptyline, emptyline, emptyline
