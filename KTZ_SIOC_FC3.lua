@@ -15,6 +15,8 @@
 dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
 local c
 
+local c
+
 -- Debug Mode, si True un fichier ".csv" est créé dans le répertoire
 -- Saved Games\DCS\Export
 -- Fichier Type "KTZ-SIOC3000_ComLog-yyyymmjj-hhmm.csv"
@@ -37,7 +39,7 @@ function logCom(message)
 			fichierComLog:write("*********************************************;\n");
 			fichierComLog:write("*     Fichier Log des Communications SIOC   *;\n");
 			fichierComLog:write("*     Par KaTZe  -  http://www.3rd-wing.net *;\n");
-			fichierComLog:write("*     Version 3.0.16 du 02/11/2014          *;\n");
+			fichierComLog:write("*     Version FC3  du 02/02/2015            *;\n");
 			fichierComLog:write("*********************************************;\n\n");
 		end
     end
@@ -215,46 +217,53 @@ function Envoi_Data_SIOC_fast()
 		logCom(CurrentTime)
 		
 		-- ============== Parametres de Vol ===============================================================
-		envoyerInfo(20,LoGetIndicatedAirSpeed()*100)-- m/sec 
-		envoyerInfo(21,LoGetTrueAirSpeed()*100)--m/sec
-		envoyerInfo(22,LoGetMachNumber()*100)-- mach * 100
+		envoyerInfo(102,LoGetIndicatedAirSpeed() * 3.6 )-- m/sec converti en km/hr
+		envoyerInfo(104,LoGetTrueAirSpeed() * 3.6)--m/sec
+		envoyerInfo(106,LoGetMachNumber()*100)-- mach * 100
 		
-		envoyerInfo(24,LoGetAltitudeAboveSeaLevel()) -- Modif DCS FC3, export en mètres
-		envoyerInfo(25,LoGetAltitudeAboveGroundLevel()) -- Modif DCS FC3, export en mètres
-		envoyerInfo(27,LoGetVerticalVelocity()) -- m/sec
+		envoyerInfo(112,LoGetAltitudeAboveSeaLevel()) -- Modif DCS FC3, export en mètres
+		envoyerInfo(120,LoGetAltitudeAboveGroundLevel()) -- Modif DCS FC3, export en mètres
+		envoyerInfo(130,LoGetVerticalVelocity()) -- m/sec
 		
 		
 		-- ============== Parametres Attitude ==============================================================
-		envoyerInfo(30,LoGetAngleOfAttack()*573)	-- Export converti en degrés
+		envoyerInfo(136,LoGetAngleOfAttack() * 573)	-- Export converti en 0.1 degrés
 				
 		-- Calcul de l'accélération, vecteur total G = Vx + Vy + Vz
 		_Acceleration = LoGetAccelerationUnits()
 		local Gmeter = _Acceleration.y / math.abs(_Acceleration.y) * math.sqrt(math.pow(_Acceleration.x,2)+math.pow(_Acceleration.y,2)+math.pow(_Acceleration.z,2))
-		envoyerInfo(28,Gmeter*100) -- Export en x * G
+		envoyerInfo(134,Gmeter*100) -- Export en x * G
 		
 		-- Table Pitch , Bank , Yaw
 		pitch,bank,yaw = LoGetADIPitchBankYaw()
-		envoyerInfo(31,pitch*573) -- Export converti en 0.1 degrés
-		envoyerInfo(32,bank*573) -- Export converti en 0.1 degrés
-		envoyerInfo(33,yaw*573) -- Export converti en 0.1 degrés
+		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrés
+		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrés
+		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrés
 		-- envoyerInfo("33",LoGetMagneticYaw()*100) -- Indicateur virage
 		-- envoyerInfo("36",LoGetSlipBallPosition()*100) -- Bille
 
 		-- ============== Parametres HSI ==================================================================
 		_ControlPanel_HSI = LoGetControlPanel_HSI()
-		envoyerInfo(71,_ControlPanel_HSI.HeadingPointer*573) -- CAP Export converti en 0.1 degrés)
-		envoyerInfo(72,_ControlPanel_HSI.ADF_raw*573) -- Waypoint Export converti en 0.1 degrés)
-		envoyerInfo(73,_ControlPanel_HSI.RMI_raw*573) -- Route Export converti en 0.1 degrés)
+		envoyerInfo(152,_ControlPanel_HSI.HeadingPointer * 573) -- CAP Export converti en 0.1 degrés)
+		envoyerInfo(156,_ControlPanel_HSI.ADF_raw * 573) -- Waypoint Export converti en 0.1 degrés)
+		envoyerInfo(154,_ControlPanel_HSI.RMI_raw * 573) -- Route Export converti en 0.1 degrés)
 		
 		
 		-- ============== Parametres ILS ==================================================================
-		envoyerInfo(90,LoGetGlideDeviation()*100)  -- ILS UP/Down
-		envoyerInfo(91,LoGetSideDeviation()*100)  -- ILS Latéral
+		-- a regrouper dans une seule valeur 50005000
+		envoyerInfo(702,LoGetGlideDeviation() * 100)  -- ILS UP/Down
+		envoyerInfo(704,LoGetSideDeviation() * 100)  -- ILS Latéral
 				
 		-- ============== Parametres Moteur ================================================================
 		_EngineInfo=LoGetEngineInfo()
-		envoyerInfo(41,_EngineInfo.RPM.left*10)--- Modif V3000, export en rmp
-		envoyerInfo(42,_EngineInfo.RPM.right*10)--- Modif V3000, export en rmp
+		local rpmL = math.floor(_EngineInfo.RPM.left*10)  
+		local rpmR = _EngineInfo.RPM.right*10             
+		envoyerInfo(202,50005000 + rpmL * 10000 + rpmR )
+		
+		local EngT_L = math.floor(_EngineInfo.Temperature.left)
+		local EngT_R = _EngineInfo.Temperature.right
+		envoyerInfo(204,50005000 + EngT_L * 10000 + EngT_R )
+
 				
 		-- ============== Position de l'Avion ===============================================================		
 		local myXCoord, myZCoord
@@ -265,15 +274,15 @@ function Envoi_Data_SIOC_fast()
 			-- envoyerInfo("13",objPlayer.Subtype)--ok
 			-- envoyerInfo("14",obj.Country)
 			-- envoyerInfo("15",_Coalition[objPlayer.Coalition])
-			envoyerInfo(95,objPlayer.Type.level1*100)--ok
-			envoyerInfo(96,objPlayer.Type.level2*100)--ok
-			envoyerInfo(97,objPlayer.Type.level3*100)--ok
-			envoyerInfo(98,objPlayer.Type.level4*100)--ok
-			envoyerInfo(82,myXCoord*100)--ok
-			envoyerInfo(83,myZCoord*100)--ok
-			envoyerInfo(85,objPlayer.LatLongAlt.Lat*100)--ok
-			envoyerInfo(86,objPlayer.LatLongAlt.Long*100)--ok
-			envoyerInfo(87,objPlayer.LatLongAlt.Alt*100)--ok
+			--envoyerInfo(95,objPlayer.Type.level1*100)--ok
+			--envoyerInfo(96,objPlayer.Type.level2*100)--ok
+			--envoyerInfo(97,objPlayer.Type.level3*100)--ok
+			--envoyerInfo(98,objPlayer.Type.level4*100)--ok
+			--envoyerInfo(82,myXCoord*100)--ok
+			--envoyerInfo(83,myZCoord*100)--ok
+			--envoyerInfo(85,objPlayer.LatLongAlt.Lat*100)--ok
+			--envoyerInfo(86,objPlayer.LatLongAlt.Long*100)--ok
+			--envoyerInfo(87,objPlayer.LatLongAlt.Alt*100)--ok
 			--envoyerInfo(21,objPlayer.Heading*100)--ok
 		end
 		
@@ -283,13 +292,13 @@ function Envoi_Data_SIOC_fast()
 		
 		-- Calcul de distance ay Way Point Pythagore sur deltaX, deltaZ (approximation géométrie plane)
 		local distance = math.sqrt(math.pow(_Route.goto_point.world_point.x-myXCoord,2)+math.pow(_Route.goto_point.world_point.z-myZCoord,2))
-			envoyerInfo(64,distance);
+			envoyerInfo(162,distance);
 			
 			-- Numéro du Way Point, correction de -1 because décalage avec affichage DCS
-			envoyerInfo(63,_Route.goto_point.this_point_num - 1); 
+			envoyerInfo(160,_Route.goto_point.this_point_num - 1); 
 			
 			-- Position x du way point, sert à KaTZ-Pit pour identifier la piste sélectionnée en mode RTN, LDG
-			envoyerInfo(93,_Route.goto_point.world_point.x*100); 
+			envoyerInfo(706,_Route.goto_point.world_point.x*100); 
 			--envoyerInfo(51,_Route.goto_point.world_point.y*100); -- inutilisé
 			--envoyerInfo(52,_Route.goto_point.world_point.z*100); -- inutilisé
 			--envoyerInfo(53,_Route.goto_point.speed_req) -- inutilisé
@@ -381,7 +390,7 @@ function Envoi_Data_SIOC_slow()
 		logCom(CurrentTime)
 	
 		-- ============== Horloge de Mission ============================================================		
-		envoyerInfo(11,LoGetModelTime())-- Heure de la mission
+		envoyerInfo(42,LoGetModelTime())-- Heure de la mission
 		-- envoyerInfo(11,LoGetMissionStartTime())-- envoyé en début de mission
 		
 		--envoyerInfo(40,LoGetBasicAtmospherePressure())
@@ -390,14 +399,20 @@ function Envoi_Data_SIOC_slow()
 		-- ============== Parametres Moteur Fuel (lents) ====================================================		
 		_EngineInfo=LoGetEngineInfo()
 		
-		envoyerInfo(43,_EngineInfo.Temperature.left)--- Export en °c
-		envoyerInfo(44,_EngineInfo.Temperature.right)--- Export en °c
+		
+
+		--envoyerInfo(43,_EngineInfo.Temperature.left)--- Export en °c
+		--envoyerInfo(44,_EngineInfo.Temperature.right)--- Export en °c
 		--envoyerInfo(45,_EngineInfo.HydraulicPressure.left*10)-- inutilisé
 		--envoyerInfo(46,_EngineInfo.HydraulicPressure.right*10)-- inutilisé
-		envoyerInfo(47,_EngineInfo.fuel_internal*100)--- Export en 0.01kg (100 UK (unité kero) = 1 kg)
-		envoyerInfo(48,_EngineInfo.fuel_external*100)--- Export en 0.01kg (100 UK = 1 kg)
+		envoyerInfo(404,_EngineInfo.fuel_internal*100)--- Export en 0.01kg (100 UK (unité kero) = 1 kg)
+		envoyerInfo(406,_EngineInfo.fuel_external*100)--- Export en 0.01kg (100 UK = 1 kg)
 		
 		-- Consommation Fuel, non utilisée, elle est mesurée dans SIOC par Delta Fuel sur 5 secondes
+		local EngC_L = math.floor(_EngineInfo.FuelConsumption.left * 6)
+		local EngC_R = math.floor(_EngineInfo.FuelConsumption.right * 6)
+		envoyerInfo(206,50005000 + EngC_L * 10000 + EngC_R )
+		
 		-- envoyerInfo(56,_EngineInfo.FuelConsumption.left*6) --conversion kg/10sec (erreur ds LO200) en kg/mn
 		-- envoyerInfo(57,_EngineInfo.FuelConsumption.right*6) --conversion kg/10sec (erreur ds LO200) en kg/mn
 		-- envoyerInfo(58,(_EngineInfo.FuelConsumption.left + _LoGetEngineInfo.FuelConsumption.right)*6)
@@ -408,25 +423,26 @@ function Envoi_Data_SIOC_slow()
 		-- "Truc", la valeur Check_WPS_MCP = 1 sera utilisée pour rescanner le weapon panel et les alarmes
 		-- Utilisé train sorti, et AF
 		Check_WPS_MCP = _MechInfo.gear.status + _MechInfo.speedbrakes.status
-		envoyerInfo(151,_MechInfo.canopy.status) -- Commande Verrière
-		envoyerInfo(152,_MechInfo.canopy.value) -- Retour Position Verrière
+		--envoyerInfo(151,_MechInfo.canopy.status) -- Commande Verrière
+		envoyerInfo(602,_MechInfo.canopy.value) -- Retour Position Verrière
 		
-		envoyerInfo(154,_MechInfo.gear.status) -- Commande Train
-		envoyerInfo(155,_MechInfo.gear.value) -- Retour position Train
+		
+		envoyerInfo(604,55 + _MechInfo.gear.status * 10 + _MechInfo.gear.value) -- Commande + Retour Train
 
-		envoyerInfo(157,_MechInfo.flaps.status)	-- Volet
-		envoyerInfo(158,_MechInfo.flaps.value)	-- Position Volet
+		envoyerInfo(605,5 + _MechInfo.flaps.status)	-- Volet
+		envoyerInfo(606,5 + _MechInfo.flaps.value)	-- Position Volet
 		
-		envoyerInfo(160,_MechInfo.speedbrakes.status) -- Commande AF
-		envoyerInfo(161,_MechInfo.speedbrakes.value)	-- Retour position AF
+		--envoyerInfo(160,_MechInfo.speedbrakes.status) -- Commande AF
+		envoyerInfo(608,5 + _MechInfo.speedbrakes.value)	-- Retour position AF
 		
-		envoyerInfo(164,_MechInfo.wheelbrakes.status)	-- Frein
-		envoyerInfo(165,_MechInfo.wheelbrakes.value)
+		--envoyerInfo(164,_MechInfo.wheelbrakes.status)	-- Frein
+		envoyerInfo(620,5 + _MechInfo.wheelbrakes.value)
 
-		envoyerInfo(167,_MechInfo.parachute.status)	-- Parachute Frein
-		envoyerInfo(168,_MechInfo.parachute.value)	-- Retour Parachute Frein
+		--envoyerInfo(167,_MechInfo.parachute.status)	-- Parachute Frein
+		envoyerInfo(610,5 + _MechInfo.parachute.value)	-- Retour Parachute Frein
 		
 		
+		-- Regrouper data Mech en 555555
 		-- Gear_Main = _MechInfo.gear.main -- inutilisé
 		--envoyerInfo("1213",_LoGetMechInfo.gear.main.nose.rod)	-- inutilisé	
 		--envoyerInfo("1214",_LoGetMechInfo.gear.main.left.rod)-- inutilisé
@@ -442,20 +458,20 @@ function Envoi_Data_SIOC_slow()
 		local pylone_selec = _PayloadInfo.CurrentStation  -- Pylone selectionné
 		local quantite_selec = 0 -- Quantité de munition dispo. (utilisé pour déclancher le chrono de tir de SIOC)
 		
-		envoyerInfo(108,pylone_selec)
+		envoyerInfo(1108,pylone_selec)
 		
 		if pylon_selec~= 0 then
 				if _PayloadInfo.Stations[pylone_selec]~= nil then 
 							
 					quantite_selec = _PayloadInfo.Stations[pylone_selec].count
-					envoyerInfo(109,quantite_selec)
+					envoyerInfo(1109,quantite_selec)
 					
 				end
 		end
 		
 		-- Scan du Canon sélectionné ------------------------------------------------------------------------
 		local canon = _PayloadInfo.Cannon.shells  -- Nombre de munitions canon restantes
-		envoyerInfo(105,canon)
+		envoyerInfo(1105,canon)
 		
 		
 		-- Scan du Panel Armement ----------------------------------------------------------------------
@@ -500,7 +516,7 @@ function Envoi_Data_SIOC_slow()
 					
 					-- un chiffre sur 7 digits, 1:22:33:44 avec les valeurs des 4 types de la munition 
 					ammo_typ = type_1 * 1000000 + type_2 * 10000 + type_3 * 100 + type_4		
-					envoyerInfo(125+pylone,ammo_typ)
+					envoyerInfo(1125+pylone,ammo_typ)
 
 					-- incrément du nombre de fuel tank
 						if type_1 == 1 then
@@ -509,7 +525,7 @@ function Envoi_Data_SIOC_slow()
 															
 				end
 			end
-			envoyerInfo(106,tank_nb)
+			envoyerInfo(1106,tank_nb)
 		end
 		
 		-- Scan des Quantités et Container, systématique chaque seconde --------------------------------------------
@@ -525,14 +541,14 @@ function Envoi_Data_SIOC_slow()
 				quant_checksum = quant_checksum + ammo_export
 				
 				-- if quant_checksum ~= old_checksum then
-				envoyerInfo(110+pylone ,ammo_export)
+				envoyerInfo(1110+pylone ,ammo_export)
 				-- old_checksum = quant_checksum
 				
 			end	
 		end
 		
 		quant_checksum = quant_checksum + canon
-		envoyerInfo(110,quant_checksum)
+		envoyerInfo(1110,quant_checksum)
 		
 		-- ============== Module de Navigation =========================================================================		
 		-- Module de Navigation
@@ -562,11 +578,11 @@ function Envoi_Data_SIOC_slow()
 							}
 			local _numACS = _tabACS[_strACS]
 						
-			envoyerInfo(60,_numMaster)
-			envoyerInfo(61,_numSubmode)
-			envoyerInfo(181,_numACS)
+			envoyerInfo(652,_numMaster)
+			envoyerInfo(654,_numSubmode)
+			envoyerInfo(556,_numACS)
 			-- Automanette			
-			envoyerInfo(184,_NavigationInfo.ACS.autothrust and 1 or 0)
+			--envoyerInfo(184,_NavigationInfo.ACS.autothrust and 1 or 0)
 		end
 
 		
@@ -574,27 +590,25 @@ function Envoi_Data_SIOC_slow()
 		_MCP = LoGetMCPState()
 		
 		if _MCP then
-		
 			-- Conversion des variables Boléenne en Nombre 0 ou 1
-			envoyerInfo(190,_MCP.MasterWarning and 1 or 0);
-			
-			-- Si Alarme ou flag_Check on envoie le détail des alarmes
-			-- Reset utile à l'arrêt lors des réparations (verrière ouverte)
+			envoyerInfo(580,_MCP.MasterWarning and 1 or 0);
+						
 			if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
-							
-				envoyerInfo(192,_MCP.RightEngineFailure and 1 or 0);
-				envoyerInfo(191,_MCP.LeftEngineFailure and 1 or 0);
-				envoyerInfo(193,_MCP.AutopilotFailure and 1 or 0);
-				envoyerInfo(180,_MCP.AutopilotOn and 1 or 0);
-				envoyerInfo(195,_MCP.ECMFailure and 1 or 0);
-				envoyerInfo(194,_MCP.EOSFailure and 1 or 0);
-				envoyerInfo(196,_MCP.RadarFailure and 1 or 0);
-				envoyerInfo(197,_MCP.GearFailure and 1 or 0);
-				envoyerInfo(198,_MCP.HydraulicsFailure and 1 or 0);
-				envoyerInfo(199,_MCP.FuelTankDamage and 1 or 0);
-				
-			end	
-					
+				local REF = (_MCP.RightEngineFailure and 1 or 0);
+				local LEF = (_MCP.LeftEngineFailure and 1 or 0);
+				local APF = (_MCP.AutopilotFailure and 1 or 0);
+				local ACMF = (_MCP.ECMFailure and 1 or 0);
+				local EOSF = (_MCP.EOSFailure and 1 or 0);
+				local RF = (_MCP.RadarFailure and 1 or 0);
+				local GF = (_MCP.GearFailure and 1 or 0);
+				local HF = (_MCP.HydraulicsFailure and 1 or 0);
+				local FTD = (_MCP.FuelTankDamage and 1 or 0);
+			end
+			
+			local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
+			
+			envoyerInfo(582,Alarm);
+		 						
 		end
 		
 		
@@ -650,13 +664,13 @@ function WeaponInit()
 		local pylone
 		--logData(" Mise à zero du panel armement")
 				
-		envoyerInfo(110,0)
-		envoyerInfo(105,0)
-		envoyerInfo(106,0)
+		envoyerInfo(1110,0)
+		envoyerInfo(1105,0)
+		envoyerInfo(1106,0)
 						
 		for pylone=1,13 do
-				envoyerInfo(110+pylone,0)
-				envoyerInfo(125+pylone,0)
+				envoyerInfo(1110+pylone,0)
+				envoyerInfo(1125+pylone,0)
 				-- envoyerInfo(140+pylone,0)
 				-- envoyerInfo(155+pylone,0)
 				-- envoyerInfo(170+pylone,0)
@@ -720,7 +734,7 @@ end
 ------------------------------------------------------------------------
 
 
-DEBUG_MODE = false; 	-- fichier ..
+DEBUG_MODE = true; 	-- fichier ..
 Sioc_OK = true
 Data_Buffer = {}
 
@@ -776,7 +790,7 @@ KTZ_DATA =
 		if Sioc_OK then
 			logCom("*** SIOC OK ***","\n")
 			-- Envoi à SIOC de l'heure de début de mission
-			envoyerInfo(10,LoGetMissionStartTime())
+			envoyerInfo(41,LoGetMissionStartTime())
 			-- Mise à zero du panel armement dans SIOC
 			WeaponInit()
 		else
