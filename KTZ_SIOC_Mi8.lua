@@ -338,10 +338,17 @@ function Envoi_Data_SIOC_fast()
 		
 		-- ============== Clock =========================================================================
 		-- Inutile, time est récupéré avec LoGetModelTime()
+		
+		
+		-- ============== Debug =========================================================================
+		envoyerInfo(20,lMainPanel:get_argument_value(342)*1000) 
+		envoyerInfo(21,lMainPanel:get_argument_value(343)*1000) 
+		envoyerInfo(22,lMainPanel:get_argument_value(344)*1000) 
+		envoyerInfo(23,lMainPanel:get_argument_value(345)*1000) 
 
 		-- ============== Contrôle de l'appareil =========================================================================		
 		--envoyerInfo(123,MainPanel:get_argument_value(191) * 1000)-- Position Collectif , WIP pour Gilles : a mettre à jour pour Mi-8
-		envoyerInfo(22,lMainPanel:get_argument_value(859)*1000)
+		--envoyerInfo(22,lMainPanel:get_argument_value(859)*1000)
 		
 		
 		-- ============== Parametres de Vol ===============================================================
@@ -471,13 +478,16 @@ function Envoi_Data_SIOC_slow()
 		local ADI_FI = 50005000 + 10000 * ADI_FF + ADI_IDX
 		envoyerInfo(146,ADI_FI)	
 		
-		local Altirad_IDX = MainPanel:get_argument_value(31) * 1000 -- Index Setting
-		local Altirad_F = math.floor(MainPanel:get_argument_value(30)) -- Alti Rad low alti Alarme
-		local Altirad_O = math.floor(MainPanel:get_argument_value(35)) -- Alti Rad On Button
+		-- ALTIRAD : Low Index Setting sur Canal "Altirad_DX"
+		envoyerInfo(124,50005000 + MainPanel:get_argument_value(31) * 1000) 
 		
-		local Altirad_FI = 50005000 + 100000 * Altirad_F + 10000 * Altirad_O + Altirad_IDX
-		envoyerInfo(122,Altirad_FI)
+		-- Alarme Low et High , Flag on/off
+		local Altirad_HF = 0 -- Alti Rad high alti Alarme (pas utilisé sur Mi-8)
+		local Altirad_LF = math.floor(MainPanel:get_argument_value(30)+0.2) -- Alti Rad low alti Alarme
+		local Altirad_O = MainPanel:get_argument_value(35) -- Alti Rad On Button
+		envoyerInfo(126,555 + Altirad_HF * 100 + Altirad_LF * 10 + Altirad_O)
 		
+				
 		
 		-- ============== Parametres Moteur (lents) ====================================================
 		
@@ -630,12 +640,12 @@ function Envoi_Data_SIOC_slow()
 		local DA_100 = math.floor(MainPanel:get_argument_value(799) * 10) -- Diss15 Drift Angle KM
 		local DA_10 = math.floor(MainPanel:get_argument_value(800) * 10)
 		local DA_1 = math.floor(MainPanel:get_argument_value(801) * 100)
-		local DA_F = lMainPanel:get_argument_value(802)
+		local DA_F = MainPanel:get_argument_value(802)
 		
 		local FP_100 = math.floor(MainPanel:get_argument_value(806) * 10) -- Diss15 Flight Path KM
 		local FP_10 = math.floor(MainPanel:get_argument_value(807) * 10) 
 		local FP_1 = math.floor(MainPanel:get_argument_value(808) * 100) 
-		local FP_F = lMainPanel:get_argument_value(805)
+		local FP_F = MainPanel:get_argument_value(805)
 		
 		local MA_100 = math.floor(MainPanel:get_argument_value(811) * 10) -- Diss15 Map Angle
 		local MA_10 = math.floor(MainPanel:get_argument_value(812) * 10) 
@@ -643,10 +653,11 @@ function Envoi_Data_SIOC_slow()
 		local MA_01 = math.floor(MainPanel:get_argument_value(814) * 60) -- export en minute d'angle
 		
 		local Dop_On = MainPanel:get_argument_value(817)
+		local Dop_Off = MainPanel:get_argument_value(65)
 
 		local Doppler_data1 = 50005000 + FP_100 * 10000000 + FP_10 * 1000000 + FP_1 * 10000 + DA_100 * 1000 + DA_10 * 100 + DA_1 
 		local Doppler_data2 = 50005000 + MA_100 * 10000000 + MA_10 * 1000000 + MA_1 * 100000 + MA_01
-		local Doppler_flag = Dop_On + DA_F *10 + FP_F * 100 + 555
+		local Doppler_flag = Dop_On + DA_F *10 + FP_F * 100 + Dop_Off * 1000 + 5555
 		
 		envoyerInfo(672,Doppler_data1)
 		envoyerInfo(674,Doppler_data2)
@@ -710,11 +721,38 @@ function Envoi_Data_SIOC_slow()
 		
 		envoyerInfo(660,ARKUD)   -- Variable Switch ARK-UD
 		
+		-- ============== Parametre Selection Ark9-ArkUD  =======================================================		
+		-- Position Switches MW/VHF
+		envoyerInfo(668,5 + math.floor(MainPanel:get_argument_value(858)+0.2)) 
+		
 		
 		-- ============== Status Armement ==================================================================
 
 		-- Scan du Canon sélectionné -------------------------------------------------------------------
-		-- Scan du Panel Armement ----------------------------------------------------------------------		
+		-- Scan du Panel Armement ----------------------------------------------------------------------	
+
+
+		-- UV-26 -------------------------------------------------------------------		
+		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
+		local uv26 = get_UV26()
+		local luv = string.len (uv26)
+						
+		if luv == 0 then 
+			uv26 = 0
+		end
+		
+		envoyerInfo(1040,5000 + uv26)
+			
+		
+		
+			local UV_On = math.floor(MainPanel:get_argument_value(910) + 0.2)  -- 0 ou 1
+			local LedLeft = MainPanel:get_argument_value(892)
+			local LedRight = MainPanel:get_argument_value(891)
+			local Side_SW = math.floor(MainPanel:get_argument_value(859) * 2 + 0.2)  -- 0 ou 0.5 ou 1
+			local Num_SW = math.floor(MainPanel:get_argument_value(913) + 0.2 )  -- 0 ou 1
+			
+			envoyerInfo(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
+			
 				
 				
 		
@@ -724,8 +762,36 @@ function Envoi_Data_SIOC_slow()
 		
 		
 end
-	
 
+-- Fonction d'extraction des informations des zones de texte	
+function parse_indication(indicator_id)
+	local ret = {}
+	local li = list_indication(indicator_id)
+	if li == "" then return nil end
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+        local name, value = m()
+        if not name then break end
+		ret[name] = value
+	end
+	return ret
+end
+
+function get_UV26()
+-- Fonction de lecture de l'afficheur de l'UV26 (ID5 sur le Mi-8)
+
+	local UV26 = parse_indication(5)
+			if not UV26 then
+				local emptyline = 0 
+				return emptyline
+			
+			else 
+			local txt = UV26["txt_digits"]
+								
+				return txt
+				
+			end
+end
 
 ---- *************************************************************************** Main Program ********************************************************************	
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -757,8 +823,8 @@ socket = require("socket")
 
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- *** Initialisation des déclencheurs rapides et lents *** -------------------------
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1

@@ -219,32 +219,51 @@ function Reception_SIOC_Cmd()
 						-- Type interrupteur deux voies, val = val * 1000
 						-- Envoi à LockOn, commande Device, Bouton + 3000 , Argument
 						--GetDevice(device):performClickableAction(3000+bouton,val*1000)
-						GetDevice(device):performClickableAction(3000+bouton,val*1)
+						GetDevice(device):performClickableAction(3000+bouton,val)
 						
 					end
 					
 					if typbouton == 2 then
 						-- Type interrupteur deux voies, avec capot , val = val * 1000
 						-- On ouvre, bascule, ferme
-						GetDevice(device):performClickableAction(3000+bouton+1,val*1000)
-						GetDevice(device):performClickableAction(3000+bouton,val*1)
-						GetDevice(device):performClickableAction(3000+bouton+1,val*1000)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
 						
 					end
 					
+					-----------------------------------------------------------------
+					-- Type 3 : 3 positions Bas/Mid/Haut
 					if typbouton == 3 then
-						-- Type interrupteur press bouton , val = val * 100
-						-- On envoie 1000 puis zero
-						GetDevice(device):performClickableAction(3000+bouton,val*100)
-						GetDevice(device):performClickableAction(3000+bouton,val*0)
-												
+						-- Type interrupteur 3 positions  -1 , 0 , +1
+						-- On décale de -1 i.e. 0>>-1 , 1>>0 , 2>>1
+						GetDevice(device):performClickableAction(3000+bouton,(val-1))
+																		
 					end
 					
+					-----------------------------------------------------------------
+					-- Type 4 : Rotateur Multiple (Décimal) ... 
 					if typbouton == 4 then
+					
 						-- Type interrupteur rotary , 0.0 , 0.1 , 0.2 , 0.3 , ...
 						-- On envoie des valeur de 0 à X
-						GetDevice(device):performClickableAction(3000+bouton,val/10)
-
+					
+						if pas < 2 then  -- Pas à 0 ou 1, incrément par 0.1
+							GetDevice(device):performClickableAction(3000+bouton,val/10)
+						end
+						
+						if pas == 2 then -- Pas à 2 , incrément par 0.05
+							GetDevice(device):performClickableAction(3000+bouton,val/20)
+						end
+					end
+					
+					-----------------------------------------------------------------
+					-- Type 5 : Press Bouton ... commande suivie de mise à zero
+					if typbouton == 5 then
+						-- Type interrupteur press bouton , val = val * 1000
+						-- On envoie 1000 puis zero
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton,val*0)
 												
 					end
 				
@@ -282,8 +301,10 @@ function Envoi_Data_SIOC_fast()
 		
 		-- ============== Clock =========================================================================
 		-- Inutile, time est récupéré avec LoGetModelTime()
-		--envoyerInfo(20,lMainPanel:get_argument_value(68)*24)
-		--envoyerInfo(21,lMainPanel:get_argument_value(69)*60)
+		--envoyerInfo(20,lMainPanel:get_argument_value(167)*1000)
+		--envoyerInfo(21,lMainPanel:get_argument_value(48)*1000)
+		--envoyerInfo(22,lMainPanel:get_argument_value(173)*1000)
+		--envoyerInfo(23,lMainPanel:get_argument_value(177)*1000)
 		--envoyerInfo(22,lMainPanel:get_argument_value(70)*60)
 		
 		-- ============== Parametres de Vol ===============================================================
@@ -347,27 +368,13 @@ function Envoi_Data_SIOC_fast()
 		
 		
 		-- ============== Parametres APU ===================================================================
-		envoyerInfo(300,lMainPanel:get_argument_value(6) * 900)-- Température APU : max 900°
+		envoyerInfo(300,50005000 + lMainPanel:get_argument_value(6) * 900)-- Température APU : max 900°
 
 		
 				
 		-- ============== Position de l'Avion ===============================================================	
 
-		-- Pilototo --------------------------------------------------------------------------------
-		local AP_B = math.floor(lMainPanel:get_argument_value(330) + 0.2)		-- K : Bank
-		local AP_P = math.floor(lMainPanel:get_argument_value(331) + 0.2)		-- T : Pitch
-		local AP_H = math.floor(lMainPanel:get_argument_value(332) + 0.2)		-- H : HDG
-		local AP_A = math.floor(lMainPanel:get_argument_value(333) + 0.2)		-- B : Alt
-		local AP_FD = math.floor(lMainPanel:get_argument_value(334) + 0.2)		--  : FD
-
-		local AP = 55555 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
-		envoyerInfo(552,AP)
-
 		
-		local AP2_H = lMainPanel:get_argument_value(175)		--  : Hover
-		local AP2_D = lMainPanel:get_argument_value(172)		--  : Descente		
-		local AP2 = 55 + AP2_D * 10 + AP2_H 
-		envoyerInfo(554,AP2)
 
 
 		--envoyerInfo(569,lMainPanel:get_argument_value(82)*1000)		--  : RAlt Danger				
@@ -546,22 +553,22 @@ function Envoi_Data_SIOC_slow()
 		local TGT_4 = MainPanel:get_argument_value(439)	-- Voyant TGT For
 		local TGT_5 = MainPanel:get_argument_value(441)	-- Voyant TGT Clear	
 		local TGT = 55555 + TGT_1 + 10000 + TGT_2 + 1000 + TGT_3 + 100 + TGT_4 + 10 +TGT_5
-		envoyerInfo(1040,TGT)
+		envoyerInfo(1018,TGT)
 		
 		-- =============== DataLink ======================================================
-		local Datalink_T1 = MainPanel:get_argument_value(21)-- Target1
-		local Datalink_T2 = MainPanel:get_argument_value(22)-- Target2
-		local Datalink_T3 = MainPanel:get_argument_value(23)-- Target3
-		local Datalink_T4 = MainPanel:get_argument_value(50)-- Target4
-		local Datalink_W1 = MainPanel:get_argument_value(17)-- Wing1
-		local Datalink_W2 = MainPanel:get_argument_value(18)-- Wing2
-		local Datalink_W3 = MainPanel:get_argument_value(19)-- Wing3
-		local Datalink_W4 = MainPanel:get_argument_value(20)-- Wing4
-		local Datalink_W5 = MainPanel:get_argument_value(16)-- All
-		local Datalink_V = MainPanel:get_argument_value(15) -- Vierge
-		local Datalink_C = MainPanel:get_argument_value(161)-- Clear
-		local Datalink_I = MainPanel:get_argument_value(150)-- Ingress
-		local Datalink_S = MainPanel:get_argument_value(159)-- SendMem
+		local Datalink_T1 = MainPanel:get_argument_value(21)*10-- Target1
+		local Datalink_T2 = MainPanel:get_argument_value(22)*10-- Target2
+		local Datalink_T3 = MainPanel:get_argument_value(23)*10-- Target3
+		local Datalink_T4 = MainPanel:get_argument_value(50)*10-- Target4
+		local Datalink_W1 = MainPanel:get_argument_value(17)*10-- Wing1
+		local Datalink_W2 = MainPanel:get_argument_value(18)*10-- Wing2
+		local Datalink_W3 = MainPanel:get_argument_value(19)*10-- Wing3
+		local Datalink_W4 = MainPanel:get_argument_value(20)*10-- Wing4
+		local Datalink_W5 = MainPanel:get_argument_value(16)*10-- All
+		local Datalink_V = MainPanel:get_argument_value(15)*10-- Vierge
+		local Datalink_C = MainPanel:get_argument_value(161)*10-- Clear
+		local Datalink_I = MainPanel:get_argument_value(150)*10-- Ingress
+		local Datalink_S = MainPanel:get_argument_value(159)*10-- SendMem
 
 		local Datalink_L1 = 5555 + Datalink_T1 * 1000 + Datalink_T2 * 100 + Datalink_T3 * 10 + Datalink_T4
 		local Datalink_L2 = 55555 + Datalink_W1 * 10000 + Datalink_W2 * 1000 + Datalink_W3 * 100 + Datalink_W4 * 10 + Datalink_W5
@@ -574,17 +581,260 @@ function Envoi_Data_SIOC_slow()
 		
 		-- Scan du Canon sélectionné ------------------------------------------------------------------------
 		
+		-- Pilototo --------------------------------------------------------------------------------
+		local AP_B = math.floor(MainPanel:get_argument_value(330)*10)		-- K : Bank
+		local AP_P = math.floor(MainPanel:get_argument_value(331)*10)		-- T : Pitch
+		local AP_H = math.floor(MainPanel:get_argument_value(332)*10)		-- H : HDG
+		local AP_A = math.floor(MainPanel:get_argument_value(333)*10)		-- B : Alt
+		local AP_FD = math.floor(MainPanel:get_argument_value(334)*10)		--  : FD
+
+		local AP = 55555 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
+		envoyerInfo(552,AP)
+
+		
+		local AP2_H = MainPanel:get_argument_value(175)		--  : Hover
+		local AP2_D = MainPanel:get_argument_value(172)		--  : Descente		
+		local AP2 = 55 + AP2_D * 10 + AP2_H 
+		envoyerInfo(554,AP2)
+		
 		
 		
 		-- Scan du Panel Armement ----------------------------------------------------------------------
+		local Wpn_S1 = MainPanel:get_argument_value(388)-- Select W1
+		local Wpn_S2 = MainPanel:get_argument_value(389)-- Select W2
+		local Wpn_S3 = MainPanel:get_argument_value(390)-- Select W3
+		local Wpn_S4 = MainPanel:get_argument_value(391)-- Select W4
+		local Wpn_P1 = MainPanel:get_argument_value(392)-- Presence W1
+		local Wpn_P2 = MainPanel:get_argument_value(393)-- Presence W2
+		local Wpn_P3 = MainPanel:get_argument_value(394)-- Presence W3
+		local Wpn_P4 = MainPanel:get_argument_value(395)-- Presence W4
+		local Wpn = 55555555 + Wpn_S1 * 10000000 + Wpn_S2 * 1000000 + Wpn_S3 * 100000 + Wpn_S4 * 10000 + Wpn_P1 * 1000 + Wpn_P2 * 100 + Wpn_P3 * 10 + Wpn_P4
+		envoyerInfo(1015,Wpn)
+		
+		-- Export des voyants Master Arm et Canon ----------------------------------------------------------------------
+		-- Export des switch réglage Canon ----------------------------------------------------------------------
+				
+		local Manauto = MainPanel:get_argument_value(403)
+		local Burst = math.floor(MainPanel:get_argument_value(400)*10 + 0.2)
+		local HeApi = MainPanel:get_argument_value(399)
+		local Rof = MainPanel:get_argument_value(398)
+		
+		local Cannon = MainPanel:get_argument_value(177)
+		local MasterArm = MainPanel:get_argument_value(167)
+		
+		envoyerInfo(1020,555555 + Manauto * 100000 + Burst * 10000 + HeApi * 1000 + Rof * 100 + Cannon * 10 + MasterArm)
+		
+	
+		
+		-- Export des quantités Rocket et Canon ----------------------------------------------------------------------
+		local wpncnt, cannoncnt = get_Weapon()
+		if wpncnt and cannoncnt then
+			envoyerInfo(1014,50005000+ wpncnt * 10000 + cannoncnt)
+		end
+		
+		-- Export des switch réglage cannon ----------------------------------------------------------------------
+		
+		
+		
+		
+		
+		
+		-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
+		local pvi1, pvi2, pvi3, pvi4 = get_PVI800()
+		if not pvi1 then pvi1 = 0 end
+		if not pvi2 then pvi2 = 0 end
+		if not pvi3 then pvi3 = 0 end
+		if not pvi4 then pvi4 = 0 end
+		
+			envoyerInfo(171,pvi1)
+			envoyerInfo(172,pvi2)
+			envoyerInfo(173, 50005000 + pvi3 * 10000 + pvi4)
+		
+
+		
+		
+		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
+		local uv26 = get_UV26()
+		if uv26 then 
+			envoyerInfo(1040,5000 + uv26)
+		end
+		
+			local UV_On = math.floor(MainPanel:get_argument_value(496) + 0.2)  -- 0 ou 1
+			local LedLeft = MainPanel:get_argument_value(541)
+			local LedRight = MainPanel:get_argument_value(542)
+			local Side_SW = math.floor(MainPanel:get_argument_value(36) * 10 + 0.2)  -- 0 ou 0.1 ou 0.2
+			local Num_SW = math.floor(MainPanel:get_argument_value(37) * 10 + 0.2)  -- 0 ou 0.1
+			
+			envoyerInfo(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
+			
+			envoyerInfo(1046,MainPanel:get_argument_value(496)*1000)
+			
+			
+		
+		
+		
+		
+		-- ============== Lecture de l'Abris =========================================================================	
+				
+		local Abris_on = MainPanel:get_argument_value(130)-- On/Off
+				
+		local c1 = 0
+		local c2 = 0
+		local c3 = 0
+		local c4 = 0
+		local c5 = 0
+		
+		local bout1,bout2,bout3,bout4,bout5  = get_Abris()
+		
+		if bout1 then 
+			c1 = abris_ref(bout1)
+		end
+		
+		if bout2 then 
+			c2 = abris_ref(bout2)
+		end
+		
+		if bout3 then 
+			c3 = abris_ref(bout3)
+		end
+		
+		if bout4 then 
+			c4 = abris_ref(bout4)
+		end
+		
+		if bout5 then 
+			c5 = abris_ref(bout5)
+		end
+		
+			
+					
+			envoyerInfo(731,50005000 + c1 * 10000 + c2)
+			envoyerInfo(732,50005000 + c3 * 10000 + c4)
+			envoyerInfo(733,50005000 + Abris_on * 10000 + c5)
+		
+		
+			
+			
+			
+		
+end
+		
 		
 		
 		-- ============== Module de Navigation =========================================================================		
 		-- Module de Navigation
 		
-		-- ============== Module Alarme ==================================================================================		
+		-- ============== Test export text ==================================================================================	
+	
 		
-		
+
+
+function abris_ref(item)
+
+	-- liste complète , problème caractère /\
+	-- local abrismenu = {"/\","\/",">",">>","ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST"	,"OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
+
+
+	local abrismenu = {"ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST","OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT",""}
+  
+	local count
+	count = 0
+	
+	for ii,xx in pairs(abrismenu) do
+		if item == xx then
+		--logCom(item)
+		--logCom(ii)
+		return ii 
+		end
+	end
+	
+end
+
+
+function parse_indication(indicator_id)
+	local ret = {}
+	local li = list_indication(indicator_id)
+	if li == "" then return nil end
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+        local name, value = m()
+        if not name then break end
+		ret[name] = value
+	end
+	return ret
+end
+
+function get_UV26()
+-- Fonction de lecture de l'afficheur de l'UV26
+
+	local UV26 = parse_indication(7)
+			if not UV26 then
+				local emptyline = 0
+				return emptyline
+			
+			else 
+			local txt = UV26["txt_digits"]
+				return txt
+			end
+end
+
+function get_Weapon()
+-- Fonction de lecture du nombre de munitions restantes
+
+	local weapon_data = parse_indication(6)
+			if not weapon_data then
+				local emptyline = 0 --string.format("%20s", "") -- 20 spaces
+				--local emptyline = "miaou"
+				return emptyline, emptyline
+			
+			else 
+				local weap_count = weapon_data["txt_weap_count"]
+				local cannon_count = weapon_data["txt_cannon_count"]
+				return weap_count,cannon_count
+										
+			end
+end
+
+function get_PVI800()
+-- Fonction de l'afficheur PVI
+
+	local pvi_data = parse_indication(5)
+			if not pvi_data then
+				--local emptyline = string.format("%20s", "") -- 20 spaces
+				local emptyline = 0 --"miaou"
+				return emptyline, emptyline
+			
+			else 
+				local pvi_1 = pvi_data["txt_VIT"]
+				local pvi_2 = pvi_data["txt_NIT"]
+				local pvi_3 = pvi_data["txt_OIT_PPM"]
+				local pvi_4 = pvi_data["txt_OIT_NOT"]
+				
+				return pvi_1 , pvi_2 , pvi_3 , pvi_4
+										
+			end
+end
+
+function get_Abris()
+-- fonction de lecture des codes des 5 boutons de l'Abris
+
+	local abris_data = parse_indication(3)
+			if not abris_data then
+				local emptyline = 0 --"Miaou"
+				--local emptyline = string.format("%20s", "") -- 20 spaces
+				-- On retourne ligne vide pour les 5 bouton
+				return emptyline, emptyline, emptyline, emptyline, emptyline
+			
+			else 
+				local b1 = abris_data["button1"]
+				local b2 = abris_data["button2"]
+				local b3 = abris_data["button3"]
+				local b4 = abris_data["button4"]
+				local b5 = abris_data["button5"]
+				
+				return b1,b2,b3,b4,b5
+										
+			end
 end
 
 
@@ -620,8 +870,8 @@ socket = require("socket")
 --- logCom("LogetMissionStartTime")	
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- *** Initialisation des déclencheurs rapides et lents *** -------------------------
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1
