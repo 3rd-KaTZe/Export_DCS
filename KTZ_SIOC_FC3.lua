@@ -15,7 +15,6 @@
 dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
 local c
 
-local c
 
 -- Debug Mode, si True un fichier ".csv" est créé dans le répertoire
 -- Saved Games\DCS\Export
