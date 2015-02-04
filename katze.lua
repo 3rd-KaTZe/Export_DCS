@@ -1,3 +1,4 @@
+exportFC3done = false
 function rendre_hommage_au_grand_Katze()
 	local lDevice = GetDevice(0)	
 	if type(lDevice) == "table" then
@@ -16,7 +17,8 @@ function rendre_hommage_au_grand_Katze()
 				dofile(lfs.writedir()..'/Scripts/KTZ_SIOC_FC3.lua');
 			end   
 		end  
-	else
+	elseif not exportFC3done then
+		exportFC3done = true
 		dofile(lfs.writedir()..'/Scripts/KTZ_SIOC_FC3.lua');
 	end
 end
