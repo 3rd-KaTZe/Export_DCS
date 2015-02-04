@@ -653,10 +653,11 @@ function Envoi_Data_SIOC_slow()
 		local MA_01 = math.floor(MainPanel:get_argument_value(814) * 60) -- export en minute d'angle
 		
 		local Dop_On = MainPanel:get_argument_value(817)
+		local Dop_Off = MainPanel:get_argument_value(65)
 
 		local Doppler_data1 = 50005000 + FP_100 * 10000000 + FP_10 * 1000000 + FP_1 * 10000 + DA_100 * 1000 + DA_10 * 100 + DA_1 
 		local Doppler_data2 = 50005000 + MA_100 * 10000000 + MA_10 * 1000000 + MA_1 * 100000 + MA_01
-		local Doppler_flag = Dop_On + DA_F *10 + FP_F * 100 + 555
+		local Doppler_flag = Dop_On + DA_F *10 + FP_F * 100 + Dop_Off * 1000 + 5555
 		
 		envoyerInfo(672,Doppler_data1)
 		envoyerInfo(674,Doppler_data2)

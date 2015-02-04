@@ -659,15 +659,16 @@ function Envoi_Data_SIOC_slow()
 			envoyerInfo(1040,5000 + uv26)
 		end
 		
+			local UV_On = math.floor(MainPanel:get_argument_value(496) + 0.2)  -- 0 ou 1
 			local LedLeft = MainPanel:get_argument_value(541)
 			local LedRight = MainPanel:get_argument_value(542)
 			local Side_SW = math.floor(MainPanel:get_argument_value(36) * 10 + 0.2)  -- 0 ou 0.1 ou 0.2
 			local Num_SW = math.floor(MainPanel:get_argument_value(37) * 10 + 0.2)  -- 0 ou 0.1
 			
-			envoyerInfo(1042, 5555 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
+			envoyerInfo(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
 			
-			envoyerInfo(1046,MainPanel:get_argument_value(36)*1000)
-			envoyerInfo(1047,MainPanel:get_argument_value(37)*1000)
+			envoyerInfo(1046,MainPanel:get_argument_value(496)*1000)
+			
 			
 		
 		

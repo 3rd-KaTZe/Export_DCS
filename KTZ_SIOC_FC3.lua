@@ -14,6 +14,8 @@
 
 dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
 
+local c
+
 -- Debug Mode, si True un fichier ".csv" est créé dans le répertoire
 -- Saved Games\DCS\Export
 -- Fichier Type "KTZ-SIOC3000_ComLog-yyyymmjj-hhmm.csv"
@@ -256,6 +258,10 @@ function Envoi_Data_SIOC_fast()
 		local rpmL = math.floor(_EngineInfo.RPM.left*10)  
 		local rpmR = _EngineInfo.RPM.right*10             
 		envoyerInfo(202,50005000 + rpmL * 10000 + rpmR )
+		
+		local EngT_L = math.floor(_EngineInfo.Temperature.left)
+		local EngT_R = _EngineInfo.Temperature.right
+		envoyerInfo(204,50005000 + EngT_L * 10000 + EngT_R )
 
 				
 		-- ============== Position de l'Avion ===============================================================		
@@ -392,9 +398,7 @@ function Envoi_Data_SIOC_slow()
 		-- ============== Parametres Moteur Fuel (lents) ====================================================		
 		_EngineInfo=LoGetEngineInfo()
 		
-		local EngT_L = math.floor(_EngineInfo.Temperature.left)
-		local EngT_R = _EngineInfo.Temperature.right
-		envoyerInfo(204,50005000 + EngT_L * 10000 + EngT_R )
+		
 
 		--envoyerInfo(43,_EngineInfo.Temperature.left)--- Export en °c
 		--envoyerInfo(44,_EngineInfo.Temperature.right)--- Export en °c
@@ -404,6 +408,10 @@ function Envoi_Data_SIOC_slow()
 		envoyerInfo(406,_EngineInfo.fuel_external*100)--- Export en 0.01kg (100 UK = 1 kg)
 		
 		-- Consommation Fuel, non utilisée, elle est mesurée dans SIOC par Delta Fuel sur 5 secondes
+		local EngC_L = math.floor(_EngineInfo.FuelConsumption.left * 6)
+		local EngC_R = math.floor(_EngineInfo.FuelConsumption.right * 6)
+		envoyerInfo(206,50005000 + EngC_L * 10000 + EngC_R )
+		
 		-- envoyerInfo(56,_EngineInfo.FuelConsumption.left*6) --conversion kg/10sec (erreur ds LO200) en kg/mn
 		-- envoyerInfo(57,_EngineInfo.FuelConsumption.right*6) --conversion kg/10sec (erreur ds LO200) en kg/mn
 		-- envoyerInfo(58,(_EngineInfo.FuelConsumption.left + _LoGetEngineInfo.FuelConsumption.right)*6)
@@ -417,8 +425,8 @@ function Envoi_Data_SIOC_slow()
 		--envoyerInfo(151,_MechInfo.canopy.status) -- Commande Verrière
 		envoyerInfo(602,_MechInfo.canopy.value) -- Retour Position Verrière
 		
-		--envoyerInfo(154,_MechInfo.gear.status) -- Commande Train
-		envoyerInfo(604,5 + _MechInfo.gear.value) -- Retour position Train
+		
+		envoyerInfo(604,55 + _MechInfo.gear.status * 10 + _MechInfo.gear.value) -- Commande + Retour Train
 
 		envoyerInfo(605,5 + _MechInfo.flaps.status)	-- Volet
 		envoyerInfo(606,5 + _MechInfo.flaps.value)	-- Position Volet
