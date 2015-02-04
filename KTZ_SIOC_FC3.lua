@@ -13,6 +13,7 @@
 -- Si l'on veut décaler la plage rentrer une valeur (ex: 2000)
 
 dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
+local c
 
 -- Debug Mode, si True un fichier ".csv" est créé dans le répertoire
 -- Saved Games\DCS\Export
