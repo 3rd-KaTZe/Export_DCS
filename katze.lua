@@ -22,7 +22,7 @@ function rendre_hommage_au_grand_Katze()
 	if la_petite_chatte then
 		if remplir_la_gamelle_de(la_petite_chatte) then
 			changer_la_litiere_de(la_petite_chatte)
-		then
+		end
 	end
 end
 
