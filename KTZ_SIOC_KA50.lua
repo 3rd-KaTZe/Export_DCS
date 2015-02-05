@@ -513,8 +513,8 @@ function Envoi_Data_SIOC_slow()
 		local EleAc_S1 = MainPanel:get_argument_value(268)		-- Position Switch Generatrice LH
 		local EleAc_S2 = MainPanel:get_argument_value(269)		-- Position Switch Generatrice RH
 
-		local Elec_V10 = MainPanel:get_argument_value(290)		-- EEG Left
-		local Elec_V11 = MainPanel:get_argument_value(292)		-- EEH Right
+		local Elec_V11 = MainPanel:get_argument_value(290)		-- EEG Left
+		local Elec_V10 = MainPanel:get_argument_value(292)		-- EEH Right
 		
 
 		local Elec_VDC = 55555 + Elec_V4 * 1000
