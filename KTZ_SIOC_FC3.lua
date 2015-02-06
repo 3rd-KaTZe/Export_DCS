@@ -751,8 +751,8 @@ socket = require("socket")
 logCom("LogetMissionStartTime")	
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- Initialisation des déclencheurs rapides et lents
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1
