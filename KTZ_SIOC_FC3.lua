@@ -238,8 +238,9 @@ function Envoi_Data_SIOC_fast()
 		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrés
-		-- envoyerInfo("33",LoGetMagneticYaw()*100) -- Indicateur virage
-		-- envoyerInfo("36",LoGetSlipBallPosition()*100) -- Bille
+		
+		--envoyerInfo(131,LoGetMagneticYaw()*576) -- Indicateur virage
+		envoyerInfo(132,LoGetSlipBallPosition()*100) -- Bille
 
 		-- ============== Parametres HSI ==================================================================
 		_ControlPanel_HSI = LoGetControlPanel_HSI()
@@ -751,8 +752,8 @@ socket = require("socket")
 logCom("LogetMissionStartTime")	
 StartTime = LoGetMissionStartTime()
 CurrentTime = LoGetModelTime()
-SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
+SamplingPeriod_1 = 0.2 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
+SamplingPeriod_2 = 1   -- Interval de séquence lente en secondes (défaut 1 seconde)
 
 -- Initialisation des déclencheurs rapides et lents
 NextSampleTime_1 = CurrentTime + SamplingPeriod_1
