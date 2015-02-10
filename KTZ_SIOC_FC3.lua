@@ -238,8 +238,9 @@ function Envoi_Data_SIOC_fast()
 		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrés
-		-- envoyerInfo("33",LoGetMagneticYaw()*100) -- Indicateur virage
-		-- envoyerInfo("36",LoGetSlipBallPosition()*100) -- Bille
+		
+		--envoyerInfo(131,LoGetMagneticYaw()*576) -- Indicateur virage
+		envoyerInfo(132,LoGetSlipBallPosition()*100) -- Bille
 
 		-- ============== Parametres HSI ==================================================================
 		_ControlPanel_HSI = LoGetControlPanel_HSI()
@@ -425,21 +426,14 @@ function Envoi_Data_SIOC_slow()
 		--envoyerInfo(151,_MechInfo.canopy.status) -- Commande Verrière
 		envoyerInfo(602,_MechInfo.canopy.value) -- Retour Position Verrière
 		
-		
 		envoyerInfo(604,55 + _MechInfo.gear.status * 10 + _MechInfo.gear.value) -- Commande + Retour Train
 
-		envoyerInfo(605,5 + _MechInfo.flaps.status)	-- Volet
-		envoyerInfo(606,5 + _MechInfo.flaps.value)	-- Position Volet
+		envoyerInfo(606,55 + _MechInfo.flaps.status * 10 + _MechInfo.flaps.value)	-- Volet + retour Posit
 		
-		--envoyerInfo(160,_MechInfo.speedbrakes.status) -- Commande AF
-		envoyerInfo(608,5 + _MechInfo.speedbrakes.value)	-- Retour position AF
+		envoyerInfo(608,55 + _MechInfo.speedbrakes.status * 10 + _MechInfo.speedbrakes.value)	-- Retour position AF
 		
-		--envoyerInfo(164,_MechInfo.wheelbrakes.status)	-- Frein
-		envoyerInfo(620,5 + _MechInfo.wheelbrakes.value)
+		envoyerInfo(620,5555 + _MechInfo.parachute.status * 1000 + _MechInfo.parachute.value * 100 +  _MechInfo.wheelbrakes.status * 10 + _MechInfo.wheelbrakes.value)
 
-		--envoyerInfo(167,_MechInfo.parachute.status)	-- Parachute Frein
-		envoyerInfo(610,5 + _MechInfo.parachute.value)	-- Retour Parachute Frein
-		
 		
 		-- Regrouper data Mech en 555555
 		-- Gear_Main = _MechInfo.gear.main -- inutilisé
