@@ -27,7 +27,7 @@ function rendre_hommage_au_grand_Katze()
 end
 
 function remplir_la_gamelle_de(chaton)
-	local f=io.open(name,'r')
+	local f=io.open(chaton,'r')
 	if f~=nil then io.close(f) return  true else return false end
 end
 
