@@ -19,13 +19,15 @@ function rendre_hommage_au_grand_Katze()
 		exportFC3done = true
 		la_petite_chatte = '/Scripts/KTZ_SIOC_FC3.lua'
 	end
-	if la_petite_chatte and remplir_la_gamelle_de(la_petite_chatte) then
-		changer_la_litiere_de(la_petite_chatte)
+	if la_petite_chatte then
+		if remplir_la_gamelle_de(la_petite_chatte) then
+			changer_la_litiere_de(la_petite_chatte)
+		end
 	end
 end
 
 function remplir_la_gamelle_de(chaton)
-	local f=io.open(name,'r')
+	local f=io.open(chaton,'r')
 	if f~=nil then io.close(f) return  true else return false end
 end
 
