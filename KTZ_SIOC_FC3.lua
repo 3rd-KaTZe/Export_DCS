@@ -238,8 +238,9 @@ function Envoi_Data_SIOC_fast()
 		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrés
 		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrés
-		-- envoyerInfo("33",LoGetMagneticYaw()*100) -- Indicateur virage
-		-- envoyerInfo("36",LoGetSlipBallPosition()*100) -- Bille
+		
+		--envoyerInfo(131,LoGetMagneticYaw()*576) -- Indicateur virage
+		envoyerInfo(132,LoGetSlipBallPosition()*100) -- Bille
 
 		-- ============== Parametres HSI ==================================================================
 		_ControlPanel_HSI = LoGetControlPanel_HSI()
