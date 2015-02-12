@@ -625,8 +625,20 @@ function Envoi_Data_SIOC_slow()
 		envoyerInfo(516,Elec_VAC)								-- Voyant Electric AC
 		
 		--envoyerInfo(530,MainPanel:get_argument_value(539) * 1000)-- Stby Gen Load
-		 
 		
+		-- ============== Status Light et NavLight ========================================================
+		local Light_S1 = MainPanel:get_argument_value(333)		-- Position Switch Dome_L
+		local Light_S2 = MainPanel:get_argument_value(489)		-- Position Switch Dome_R
+		local Light_S3 = MainPanel:get_argument_value(513)		-- Position Switch Nav Light
+		local Light_S4 = MainPanel:get_argument_value(514)		-- Position Switch Form Light
+		local Light_S5 = MainPanel:get_argument_value(515)		-- Position Switch Blade Tip
+		local Light_S6 = MainPanel:get_argument_value(516)		-- Position Switch Strobe
+		local Light_S7 = MainPanel:get_argument_value(837)		-- Position Switch Landing Light L
+		local Light_S8 = MainPanel:get_argument_value(838)		-- Position Switch Landing Light R
+		
+		local Light_SW = 55555555 + Light_S7 * 10000000 + Light_S8 * 1000000  + Light_S1 * 100000 + Light_S2 * 10000 + Light_S3 * 1000 + Light_S4 * 100 + Light_S5 * 10 + Light_S6
+		envoyerInfo(520,Light_SW)								-- Position Switch Lights
+	
 
 		-- ============== Status Eléments Mécaniques ======================================================== WIP : a mettre à jour pour Mi-8
 		envoyerInfo(602,MainPanel:get_argument_value(215))-- Porte Cockpit , 0 fermée , 100 ouverte	
