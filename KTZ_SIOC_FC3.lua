@@ -586,21 +586,21 @@ function Envoi_Data_SIOC_slow()
 			-- Conversion des variables Boléenne en Nombre 0 ou 1
 			envoyerInfo(580,_MCP.MasterWarning and 1 or 0);
 						
-			if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
-				local REF = (_MCP.RightEngineFailure and 1 or 0);
-				local LEF = (_MCP.LeftEngineFailure and 1 or 0);
-				local APF = (_MCP.AutopilotFailure and 1 or 0);
-				local ACMF = (_MCP.ECMFailure and 1 or 0);
-				local EOSF = (_MCP.EOSFailure and 1 or 0);
-				local RF = (_MCP.RadarFailure and 1 or 0);
-				local GF = (_MCP.GearFailure and 1 or 0);
-				local HF = (_MCP.HydraulicsFailure and 1 or 0);
-				local FTD = (_MCP.FuelTankDamage and 1 or 0);
-			end
+			--if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
+			--	local REF = (_MCP.RightEngineFailure and 1 or 0);
+			--	local LEF = (_MCP.LeftEngineFailure and 1 or 0);
+			--	local APF = (_MCP.AutopilotFailure and 1 or 0);
+			--	local ACMF = (_MCP.ECMFailure and 1 or 0);
+			--	local EOSF = (_MCP.EOSFailure and 1 or 0);
+			--	local RF = (_MCP.RadarFailure and 1 or 0);
+			--	local GF = (_MCP.GearFailure and 1 or 0);
+			--	local HF = (_MCP.HydraulicsFailure and 1 or 0);
+			--	local FTD = (_MCP.FuelTankDamage and 1 or 0);
+			--end
 			
-			local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
+			--local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
 			
-			envoyerInfo(582,Alarm);
+			--envoyerInfo(582,Alarm);
 		 						
 		end
 		
