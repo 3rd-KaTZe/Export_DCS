@@ -30,7 +30,7 @@ function logCom(message)
 	-- Format , KTZ-SIOC5008_ComLog-yyyymmdd-hhmm.csv
 	--
 	if DEBUG_MODE and not fichierComLog then
-       	fichierComLog = io.open(lfs.writedir().."Export\\KTZ-KA-SIOC5008_ComLog-"..os.date("%Y%m%d-%H%M")..".csv", "w");
+       	fichierComLog = io.open(lfs.writedir().."Logs\\KatzePit\\KTZ-KA-SIOC5008_ComLog-"..os.date("%Y%m%d-%H%M")..".csv", "w");
 				
 		-- Ecriture de l'entète dans le fichier
 		if fichierComLog then
