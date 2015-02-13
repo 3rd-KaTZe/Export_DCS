@@ -31,7 +31,7 @@ function logCom(message)
 	-- Format , KTZ-UH-SIOC5009_ComLog-yyyymmdd-hhmm.csv
 	--
 	if DEBUG_MODE and not fichierComLog then
-       	fichierComLog = io.open(lfs.writedir().."Export\\KTZ-UH-SIOC5009_ComLog-"..os.date("%Y%m%d-%H%M")..".csv", "w");
+       	fichierComLog = io.open(lfs.writedir().."Logs\\KatzePit\\KTZ-UH-SIOC5009_ComLog-"..os.date("%Y%m%d-%H%M")..".csv", "w");
 				
 		-- Ecriture de l'entète dans le fichier
 		if fichierComLog then
@@ -604,19 +604,45 @@ socket = require("socket")
 		Sioc_OK = false
 	end
 
-StartTime = LoGetMissionStartTime()
-CurrentTime = LoGetModelTime()
+if Sioc_OK then
+	
 
---- *************** TIMING DES DEUX BOUCLES ****************************************************************************
-SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 200 millisecondes)
-SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 1 seconde)
---- *************** TIMING DES DEUX BOUCLES ****************************************************************************
+	-- Envoi à SIOC de l'heure de début de mission
+	StartTime = LoGetMissionStartTime()
+	envoyerInfo(41,StartTime)
+	
+	CurrentTime = LoGetModelTime()
+	SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
+	SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+	SamplingPeriod_FPS = 5  -- Interval de mesure des fps (défaut 5 secondes)
 
+	logCom("  ","\n")
+	logCom("--- Initialisation du Séquenceur ---" ,"\n")
+	logCom(string.format(" Mission Start Time (secondes) = %.0f",StartTime,"\n"))	
+	logCom(string.format(" Sampling Period 1 = %.1f secondes",SamplingPeriod_1,"\n"))
+	logCom(string.format(" Sampling Period 2 = %.1f secondes",SamplingPeriod_2,"\n"))
+	logCom(string.format(" Sampling Period FPS = %.1f secondes",SamplingPeriod_FPS,"\n"))
 
+	-- Initialisation des déclencheurs rapides, lents et FPS
+	NextSampleTime_1 = CurrentTime + SamplingPeriod_1
+	NextSampleTime_2 = CurrentTime + SamplingPeriod_2
+	NextSampleTime_FPS = CurrentTime + SamplingPeriod_FPS
 
--- *** Initialisation des déclencheurs rapides et lents *** -------------------------
-NextSampleTime_1 = CurrentTime + SamplingPeriod_1
-NextSampleTime_2 = CurrentTime + SamplingPeriod_2
+	logCom("  ","\n")
+	logCom("---KaTZe Log: KTZ-FPS-Check Activated ----")
+	fps_counter = 0
+	fps_max = 0
+	fps_min = 0
+	fps_tot = 0
+	fps_0_10 = 0
+	fps_10_20 = 0
+	fps_20_30 = 0
+	fps_30_40 = 0
+	fps_40_50 = 0
+	fps_50 = 0
+	
+end	
+
 
 KTZ_DATA =
 {
@@ -627,26 +653,8 @@ KTZ_DATA =
 				
 		logCom("  ","\n")
 		logCom("*** Fonction KD_Start ***","\n")
-		logCom(string.format(" Mission Start Time = %.0f",StartTime,"\n"))	
-		logCom(string.format(" Sampling Period 1 = %.1f secondes",NextSampleTime_1,"\n"))
-		logCom(string.format(" Sampling Period 2 = %.1f secondes",NextSampleTime_2,"\n"))
-		
-		-- local name = LoGetPilotName()
-		--logCom(name)
 		logCom("  ","\n")
-		
-		if Sioc_OK then
-			logCom("*** SIOC OK ***","\n")
-			-- Envoi à SIOC de l'heure de début de mission
-			envoyerInfo(41,LoGetMissionStartTime())
-			-- envoyerInfo(6,LoGetPlayerPlaneId())
-			
-		else
-		
-			logCom("*** SIOC Probleme ***","\n")
-			
-		end
-				
+								
 	end,
 
 -- Fonction avant chaque image ---------------------------------------------------------------------
@@ -659,6 +667,7 @@ KTZ_DATA =
 -- Fonction après chaque image ---------------------------------------------------------------------
 	KD_AfterNextFrame=function(self)
 		-- Récupération du Time Code, utilisé par le séquenceur pour test et déclancher les séquences rapides et lentes
+		fps_counter = fps_counter + 1
 		CurrentTime = LoGetModelTime()
 	end,
 
@@ -699,25 +708,88 @@ KTZ_DATA =
 		-- Option Réception des ordres de SIOC séquence lente
 		-- Reception_SIOC_Cmd()
 				
-	end,	
+	end,
+
+-- Fonction à chaque intervalle de temps de mesure FPS  -----------------------------------------------------------------------
+	-- Défaut 5 secondes	
+	KD_AtInterval_FPS=function(self)
+	
+		fps_tot = fps_tot + fps_counter -- Compteur du total de frames
+	
+		-- logCom(string.format("*** Fonction K_AtInterval_FPS @= %.2f",CurrentTime,"\n"))
+		-- Classement du nombre de frames de l'intervalle de temps dans l'histogramme
+		
+		if fps_counter < 10 * SamplingPeriod_FPS then
+			fps_0_10 = fps_0_10 + fps_counter
+		else
+			if fps_counter < 20 * SamplingPeriod_FPS then
+				fps_10_20 = fps_10_20 + fps_counter
+			else
+				if fps_counter < 30 * SamplingPeriod_FPS then
+					fps_20_30 = fps_20_30 + fps_counter
+				else
+					if fps_counter < 40 * SamplingPeriod_FPS then
+						fps_30_40 = fps_30_40 + fps_counter
+					else
+						if fps_counter < 50 * SamplingPeriod_FPS then
+							fps_40_50 = fps_40_50 + fps_counter
+						else
+							fps_50 = fps_50 + fps_counter
+						end
+					end
+				end	
+			end
+		end
+
+		-- remise à zero du compteur de frame de l'intervalle de temps
+		fps_counter = 0
+		-- calcul de la date de fin du prochain intervalle de temps
+		NextSampleTime_FPS = CurrentTime + SamplingPeriod_FPS
+		
+end,	
 	
 -- Fonction fin de mission -----------------------------------------------------------------------------
 	KD_Stop=function(self)
 	
-	-- Par défaut, Rien ... possibilité d'imprimer un rapport de mission avec LogCom ... à développer
+	-- Calcul des pourcentages de chaque tranche de l'histogramme
+	local histo_0_10 = fps_0_10 / fps_tot * 100
+	local histo_10_20 = fps_10_20 / fps_tot * 100
+	local histo_20_30 = fps_20_30 / fps_tot * 100
+	local histo_30_40 = fps_30_40 / fps_tot * 100
+	local histo_40_50 = fps_40_50 / fps_tot * 100
+	local histo_50 = fps_50 / fps_tot * 100
+	
+
 	-- logCom(messageInit)
-	logCom("*** Fonction KD_Stop ***")
+	logCom("  ","\n")
+	logCom("*** Fin du Vol ***")
 	logCom("  ","\n")
 		
 	-- log des résultats
 	logCom(string.format(" Flight Duration = %.0f secondes",CurrentTime,"\n"))
 	logCom("  ","\n")
+	logCom("*** Information de FPS, histogramme sur le vol ***")
 	logCom("  ","\n")
+	logCom(string.format(" Total Number of Frames = %.0f",fps_tot,"\n"))
+	logCom(string.format(" Flight Duration = %.0f secondes",CurrentTime,"\n"))
+	logCom("  ","\n")
+	logCom(string.format("*** Average FPS =  %.1f ",fps_tot/CurrentTime,"\n"))
+	logCom("  ","\n")
+	logCom(string.format("*** FPS < 10      = %.1f percent",histo_0_10,"\n"))
+	logCom(string.format("*** 10 < FPS < 20 = %.1f percent",histo_10_20,"\n"))
+	logCom(string.format("*** 20 < FPS < 30 = %.1f percent",histo_20_30,"\n"))
+	logCom(string.format("*** 30 < FPS < 40 = %.1f percent",histo_30_40,"\n"))
+	logCom(string.format("*** 40 < FPS < 50 = %.1f percent",histo_40_50,"\n"))
+	logCom(string.format("*** 50 < FPS      = %.1f percent",histo_50,"\n"))
+	logCom("  ","\n")
+
+	
 	logCom("Miaou à tous !!!")
 		
 	end,
 		
 }
+
 
 
 -- Declencheur de séquence (depuis export.lua)
@@ -770,6 +842,9 @@ do
 			end
 			if CurrentTime >= NextSampleTime_2 then
 				KTZ_DATA:KD_AtInterval_2();  -- Déclencheur séquence lente
+			end
+			if CurrentTime >= NextSampleTime_FPS then
+				KTZ_DATA:KD_AtInterval_FPS(); -- Déclencheur séquence ultra lente
 			end
 			
 		if PrevLuaExportAfterNextFrame then
