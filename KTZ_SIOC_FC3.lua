@@ -218,7 +218,7 @@ function Envoi_Data_SIOC_fast()
 		-- ============== Parametres de Vol ===============================================================
 		envoyerInfo(102,LoGetIndicatedAirSpeed() * 3.6 )-- m/sec converti en km/hr
 		envoyerInfo(104,LoGetTrueAirSpeed() * 3.6)--m/sec
-		envoyerInfo(106,LoGetMachNumber()*100)-- mach * 100
+		envoyerInfo(106,LoGetMachNumber()*1000)-- mach * 1000
 		
 		envoyerInfo(112,LoGetAltitudeAboveSeaLevel()) -- Modif DCS FC3, export en mètres
 		envoyerInfo(120,LoGetAltitudeAboveGroundLevel()) -- Modif DCS FC3, export en mètres
@@ -282,7 +282,7 @@ function Envoi_Data_SIOC_fast()
 			--envoyerInfo(83,myZCoord*100)--ok
 			--envoyerInfo(85,objPlayer.LatLongAlt.Lat*100)--ok
 			--envoyerInfo(86,objPlayer.LatLongAlt.Long*100)--ok
-			--envoyerInfo(87,objPlayer.LatLongAlt.Alt*100)--ok
+			envoyerInfo(110,objPlayer.LatLongAlt.Alt*100)--ok
 			--envoyerInfo(21,objPlayer.Heading*100)--ok
 		end
 		
@@ -393,7 +393,7 @@ function Envoi_Data_SIOC_slow()
 		envoyerInfo(42,LoGetModelTime())-- Heure de la mission
 		-- envoyerInfo(11,LoGetMissionStartTime())-- envoyé en début de mission
 		
-		--envoyerInfo(40,LoGetBasicAtmospherePressure())
+		envoyerInfo(128,LoGetBasicAtmospherePressure()*10)
 		
 
 		-- ============== Parametres Moteur Fuel (lents) ====================================================		
@@ -586,21 +586,21 @@ function Envoi_Data_SIOC_slow()
 			-- Conversion des variables Boléenne en Nombre 0 ou 1
 			envoyerInfo(580,_MCP.MasterWarning and 1 or 0);
 						
-			--if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
-			--	local REF = (_MCP.RightEngineFailure and 1 or 0);
-			--	local LEF = (_MCP.LeftEngineFailure and 1 or 0);
-			--	local APF = (_MCP.AutopilotFailure and 1 or 0);
-			--	local ACMF = (_MCP.ECMFailure and 1 or 0);
-			--	local EOSF = (_MCP.EOSFailure and 1 or 0);
-			--	local RF = (_MCP.RadarFailure and 1 or 0);
-			--	local GF = (_MCP.GearFailure and 1 or 0);
-			--	local HF = (_MCP.HydraulicsFailure and 1 or 0);
-			--	local FTD = (_MCP.FuelTankDamage and 1 or 0);
-			--end
+			if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
+				local REF = (_MCP.RightEngineFailure and 1 or 0);
+				local LEF = (_MCP.LeftEngineFailure and 1 or 0);
+				local APF = (_MCP.AutopilotFailure and 1 or 0);
+				local ACMF = (_MCP.ECMFailure and 1 or 0);
+				local EOSF = (_MCP.EOSFailure and 1 or 0);
+				local RF = (_MCP.RadarFailure and 1 or 0);
+				local GF = (_MCP.GearFailure and 1 or 0);
+				local HF = (_MCP.HydraulicsFailure and 1 or 0);
+				local FTD = (_MCP.FuelTankDamage and 1 or 0);
+			end
 			
-			--local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
+			local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
 			
-			--envoyerInfo(582,Alarm);
+			envoyerInfo(582,Alarm);
 		 						
 		end
 		
@@ -758,8 +758,11 @@ if Sioc_OK then
 	envoyerInfo(41,StartTime)
 	
 	CurrentTime = LoGetModelTime()
-	SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
-	SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+-- Va chercher la config IP dans siocConfig
+   	--SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
+	--SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+	SamplingPeriod_1 = (siocConfig.timing_fast / 1000) or 0.1
+	SamplingPeriod_2 = (siocConfig.timing_slow / 1000) or 0.5
 	SamplingPeriod_FPS = 5  -- Interval de mesure des fps (défaut 5 secondes)
 
 	logCom("  ","\n")

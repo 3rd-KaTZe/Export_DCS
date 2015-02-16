@@ -873,8 +873,12 @@ if Sioc_OK then
 	envoyerInfo(41,StartTime)
 	
 	CurrentTime = LoGetModelTime()
-	SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
-	SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+	
+	-- Va chercher la config IP dans siocConfig
+   	--SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
+	--SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+	SamplingPeriod_1 = (siocConfig.timing_fast / 1000) or 0.1
+	SamplingPeriod_2 = (siocConfig.timing_slow / 1000) or 0.5
 	SamplingPeriod_FPS = 5  -- Interval de mesure des fps (défaut 5 secondes)
 
 	logCom("  ","\n")
