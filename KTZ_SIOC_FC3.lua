@@ -595,10 +595,10 @@ function Envoi_Data_SIOC_slow()
 				local RF = (_MCP.RadarFailure and 1 or 0);
 				local GF = (_MCP.GearFailure and 1 or 0);
 				local HF = (_MCP.HydraulicsFailure and 1 or 0);
-				local FTD = (_MCP.FuelTankDamage and 1 or 0);
+				--local FTD = (_MCP.FuelTankDamage and 1 or 0);
 			end
 			
-			local Alarm = 555555555 + FTD * 100000000 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
+			local Alarm = 555555555 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
 			
 			envoyerInfo(582,Alarm);
 		 						
