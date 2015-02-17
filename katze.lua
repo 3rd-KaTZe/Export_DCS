@@ -1,4 +1,11 @@
+package.path  = package.path..";.\\LuaSocket\\?.lua"
+package.cpath = package.cpath..";.\\LuaSocket\\?.dll"
+
+
 k = {} -- création de la "master table"
+k.config = {}
+k.sioc = {}
+k.loop = {} -- boucles d'export
 
 k.debug = true
 
@@ -6,18 +13,45 @@ k.export_fc3_done = false -- l'export de FC3 a déjà été fait, ne plus le ref
 k.current_aircraft = nil -- appareil dans lequel l'utilisateur se trouve actuellement
 k.log = nil -- fonction de logging
 k.log_file = nil -- fichier log
-k.sioc = {}
-k.sioc.socket = nil
+dofile ( lfs.writedir().."Scripts\\siocConfig.lua" ) -- parsing des options
+k.config.sioc.fast = (k.sioc.config.fast or 100) / 1000 -- intervalle boucle d'export rapide
+k.config.sioc.slow = (k.sioc.config.slow or 500) / 1000 -- intervalle boucle d'export lente
+k.config.sioc.ip = k.sioc.config.ip or "127.0.0.1" -- IP serveur SIOC
+k.config.sioc.port = k.sioc.config.port or 8092 -- port serveur SIOC
+k.config.fps = k.config.fps or 5 -- intervalle échantillonages FPS
+k.sioc.ok = false -- "true" si le socket SIOC est connecté
+k.sioc.socket = require("socket") -- socket SIOC client
 k.sioc.contact = nil
 k.sioc.msg = nil
-k.sioc.connect = nil
-k.sioc.write = nil
-k.sioc.read = nil
-k.sioc.config = {}
-k.sioc.buffer = {}
+k.sioc.connect = nil -- fonction de connection à sioc
+k.sioc.write = nil -- fonction d'envoi des données à SIOC
+k.sioc.read = nil -- fonction de réception des données SIOC
+k.sioc.buffer = {} -- tampon SIOC
 
-k.fast = nil -- fonction d'export rapide
-k.slow = nil -- fonction 
+k.loop.fast = {} -- export rapide
+k.loop.fast.func = nil 
+k.loop.fast.next_sample = nil
+
+k.loop.slow = {} -- export lent
+k.loop.slow.func = nil -- fonction d'export lente
+k.loop.slow.next_sample = nil
+
+k.loop.fps = {} -- export lent
+k.loop.fps.func = nil -- fonction d'export lente
+k.loop.fps.next_sample = nil
+k.loop.fps.counter = nil
+k.loop.fps.max = nil
+k.loop.fps.min = nil
+k.loop.fps.tot = nil
+
+
+
+k.export = {}
+k.export.weapon_init = nil
+
+
+
+
 
 
 k.log = function (message)
@@ -237,4 +271,39 @@ function file_exists(chaton)
 	if f~=nil then io.close(f) return  true else return false end
 end
 
-dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
+
+
+if pcall(k.sioc.connect) then
+	k.log("connection SIOC établie")
+	k.sioc.ok = true
+else
+	k.log("échec lors de la connexion à SIOC")
+	k.sioc.ok = false
+end
+
+if k.sioc.ok then
+	
+	-- Mise à zero du panel armement dans SIOC
+	k.export.weapon_init()
+	
+	-- Envoi à SIOC de l'heure de début de mission
+	local mission_start = LoGetMissionStartTime()
+	local cur_time = LoGetModelTime()
+	
+	k.sioc.write(41,mission_start)
+
+	k.log("  ","\n")
+	k.log("--- Initialisation du Séquenceur ---" ,"\n")
+	k.log(string.format(" Début de mission (secondes) = %.0f",mission_start,"\n"))	
+	k.log(string.format(" Boucle rapide = %.1f secondes",k.config.sioc.fast,"\n"))
+	k.log(string.format(" Boucle rapide = %.1f secondes",k.config.sioc.slow,"\n"))
+	k.log(string.format(" Echantillonnage FPS = %.1f secondes",k.config.fps,"\n"))
+
+	-- Initialisation des déclencheurs rapides, lents et FPS
+	k.loop.fast.next_sample = cur_time + k.config.sioc.fast
+	k.loop.slow.next_sample  = cur_time + k.config.sioc.slow
+	k.loop.fps.next_sample  = cur_time + k.config.fps
+
+	k.log("  ","\n")
+	k.log("---KaTZe Log: KTZ-FPS-Check Activated ----")
+end
