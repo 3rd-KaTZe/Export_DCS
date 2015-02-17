@@ -44,10 +44,44 @@ k.loop.fps.max = nil
 k.loop.fps.min = nil
 k.loop.fps.tot = nil
 
-
-
 k.export = {}
 k.export.weapon_init = nil
+k.loop.current_time = nil
+k.export.fast = nil
+k.export.slow = nil
+
+k.export.start = function(self)
+	k.log("  ","\n")
+	k.log("--- Export Start ---" ,"\n")
+	k.log("  ","\n")
+end
+k.export.AfterNextFrame=function(self)
+		k.loop.fps.counter += 1
+		k.loop.current_time = LoGetModelTime()
+end
+
+k.export.BeforeNextFrame = function(self) end
+
+k.loop.fast.func = function(self)
+	k.loop.fast.next_sample = k.loop.current_time + k.config.sioc.fast
+	if k.sioc.ok then
+		-- Fonction d'envoi des données à SIOC (liste fast)
+		k.export.fast()
+		-- Option Réception des ordres de SIOC séquence rapide (par défaut dans la séquence lente)
+		k.sioc.read()
+	end
+end
+
+k.loop.slow.func = function(self)
+	k.loop.slow.next_sample = k.loop.current_time + k.config.sioc.slow
+	if k.sioc.ok then
+		-- Fonction d'envoi des données à SIOC (liste slow)
+		k.export.slow()
+		-- Option Réception des ordres de SIOC séquence lente (par défaut dans la séquence lente)
+		k.sioc.read()
+	end
+end
+
 
 
 
@@ -196,9 +230,10 @@ k.sioc.read = function()
 			-- découpe du message en commande et envoi à lockon
 			-- (commandes type 1=3  0=23  6=3456)
 			
-			local cmd,c,v,i,e,ee
+			local cmd,c,sv,v,i,e,ee
 			-- cmd: commande
 			-- c: canal
+			-- sv: valeur, string
 			-- v: valeur
 			-- i: index
 			-- e: fin du message précédent
@@ -224,6 +259,50 @@ k.sioc.read = function()
 				if c == 1 and v > 0 then
 					k.log("sioc.read(): envoi de la valeur à DCS")
 					LoSetCommand(v)
+				end
+				
+				
+				if chan ==2 and valeur > 10000 then
+					local func1 = function(device, bouton, val, pas)
+						GetDevice(device):performClickableAction(3000+bouton,val)
+					end
+					local func2 = function(device, bouton, val, pas)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton+1,val)
+					end
+					local func3 = function(device, bouton, val, pas)
+						GetDevice(device):performClickableAction(3000+bouton,(val-1))
+					end
+					local func4 = function(device, bouton, val, pas)
+						if pas < 2 then  -- Pas à 0 ou 1, incrément par 0.1
+							GetDevice(device):performClickableAction(3000+bouton,val/10)
+						end
+						
+						if pas == 2 then -- Pas à 2 , incrément par 0.05
+							GetDevice(device):performClickableAction(3000+bouton,val/20)
+						end
+					end	
+					local func5 = function(device, bouton, val, pas)
+						GetDevice(device):performClickableAction(3000+bouton,val)
+						GetDevice(device):performClickableAction(3000+bouton,val*0)
+					end
+					
+					local funcs = {
+						[1] = func1,
+						[2] = func2,
+						[3] = func3,
+						[4] = func4,
+						[5] = func5
+					}
+					
+					typbouton = tonumber(string.sub(sv,1,1))
+					device = tonumber(string.sub(sv,2,3))
+					bouton = tonumber(string.sub(sv,4,6))
+					pas = tonumber(string.sub(sv,7,7))
+					val = tonumber(string.sub(sv,8,8))
+					funcs[typebouton](device, bouton, val, pas)
+				
 				end
 					
 				-- passage au message suivant			
@@ -288,7 +367,7 @@ if k.sioc.ok then
 	
 	-- Envoi à SIOC de l'heure de début de mission
 	local mission_start = LoGetMissionStartTime()
-	local cur_time = LoGetModelTime()
+	k.loop.current_time = LoGetModelTime()
 	
 	k.sioc.write(41,mission_start)
 
@@ -300,9 +379,9 @@ if k.sioc.ok then
 	k.log(string.format(" Echantillonnage FPS = %.1f secondes",k.config.fps,"\n"))
 
 	-- Initialisation des déclencheurs rapides, lents et FPS
-	k.loop.fast.next_sample = cur_time + k.config.sioc.fast
-	k.loop.slow.next_sample  = cur_time + k.config.sioc.slow
-	k.loop.fps.next_sample  = cur_time + k.config.fps
+	k.loop.fast.next_sample = k.loop.current_time + k.config.sioc.fast
+	k.loop.slow.next_sample  = k.loop.current_time + k.config.sioc.slow
+	k.loop.fps.next_sample  = k.loop.current_time + k.config.fps
 
 	k.log("  ","\n")
 	k.log("---KaTZe Log: KTZ-FPS-Check Activated ----")
@@ -311,3 +390,23 @@ if k.sioc.ok then
 	LuaExportStart=function()
 		KTZ_DATA:KD_Start(); if PrevLuaExportStart then PrevLuaExportStart() end; end
 	end
+
+	
+	local PrevLuaExportAfterNextFrame=LuaExportAfterNextFrame;
+	LuaExportAfterNextFrame=function()
+		KTZ_DATA:KD_AfterNextFrame();
+		if CurrentTime >= NextSampleTime_1 then
+			KTZ_DATA:KD_AtInterval_1();  -- Déclencheur séquence rapide
+		end
+		if CurrentTime >= NextSampleTime_2 then
+			KTZ_DATA:KD_AtInterval_2();  -- Déclencheur séquence lente
+		end
+		if CurrentTime >= NextSampleTime_FPS then
+			KTZ_DATA:KD_AtInterval_FPS(); -- Déclencheur séquence ultra lente
+		end
+			
+		if PrevLuaExportAfterNextFrame then
+			PrevLuaExportAfterNextFrame();
+		end
+	end
+end
