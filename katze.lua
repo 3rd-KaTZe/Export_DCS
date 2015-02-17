@@ -1,10 +1,10 @@
 k = {} -- création de la "master table"
 k.export_fc3_done = false -- l'export de FC3 a déjà été fait, ne plus le refaire en boucle pour rien
 k.current_aircraft = nil -- appareil dans lequel l'utilisateur se trouve actuellement
-k.c -- socket
 k.log = nil
 k.log_file = nil
 k.sioc = {}
+k.sioc.socket = nil
 k.sioc.contact = nil
 k.sioc.msg = nil
 k.sioc.connect = nil
@@ -49,11 +49,11 @@ k.sioc.connect = function ()
 	k.log("sioc_connect: ip:"..host.." port:"..port)
 	
 	k.log("sioc_connect: ouverture du socket")
-	k.c = socket.try(socket.connect(host, port)) -- connect to the listener socket
+	k.sioc.socket = socket.try(socket.connect(host, port)) -- connect to the listener socket
 	k.log("sioc_connect: socket.tcp-nodelay: true")
-	k.c:setoption("tcp-nodelay",true) -- set immediate transmission mode
+	k.sioc.socket:setoption("tcp-nodelay",true) -- set immediate transmission mode
 	k.log("sioc_connect: socket.timeout: 0.1")
-	k.c:settimeout(.01) -- set the timeout for reading the socket)
+	k.sioc.socket:settimeout(.01) -- set the timeout for reading the socket)
    
 ------------------------------------------------------------------------
 -- 	Offset de SIOC qui seront écoutés								  --
@@ -92,19 +92,103 @@ k.sioc.write = function (k, v)
 
 	-- Décalage des exports vers une plage SIOC
 	-- Indiquer dans siocConfig.lua la plage désirée
-	local strNew = tostring(tonumber(k) + sioc.config.plage)
+	k = tostring(tonumber(k) + sioc.config.plage)
 	
 	v = string.format("%d", v);
 	
-	if (strValeur ~= Data_Buffer[strNew]) then
+	if (v ~= sioc.buffer[k]) then
 		-- On stock la nouvelle valeur dans la table buffer
-		Data_Buffer[strNew] = strValeur ;
+		sioc.buffer[k] = v ;
 		-- Envoi de la nouvelle valeur
-		socket.try(c:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
-		local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
-		-- Log du message envoyé
-		--logCom(messageEnvoye)
+		local msg = string.format("Arn.Resp:%s=%.0f:\n",k,v)
+		socket.try(k.sioc.socket:send(msg))
+		-- k.log(msg)
 	end		
+end
+
+k.sioc.read = function()
+	
+	-- Check for data/string from the SIOC server on the socket
+    --logCom("*** Fonction recupInfo activated","\n")
+	
+	-- socket.try(c:send("Arn.Resp"))
+	local msg = sioc.socket:receive()
+    
+	if msg then
+		-- k.log("IN-->;".. tostring(messageRecu))
+		
+		local s,e,m = string.find(msg,"(Arn.%w+)");
+		m = tostring(m);
+        
+		------------------------------------------------------------
+		-- Les types de message acceptés :                        --
+		--                                                        --
+		-- Arn.Vivo   : Le serveur à reçu "Arn.Vivo": du client   -- implementation à tester
+		--              Le serveur répond "Arn.Vivo"              --
+		--														  --
+		-- Arn.Resp   : Message pour l'execution des commandes    -- réponse de SIOC
+		--              seul deux valeurs sont acceptées:         --
+		--				0=[valeur] -> le paramètres valeur(      )--
+		-- 				1=[valeur] -> le paramètre commande		  --
+		--				Ex:Arn.Resp:0=5000:1=3: ou Arn.Resp:1=145:--
+		--              a noter que Arn.Resp:1=0: remets le       --
+		--              cache valeur à 'nil' aussi aprés chaque   --
+		--				commande exécuté                          --
+		------------------------------------------------------------
+		if m == "Arn.Resp" then
+			--logData("Message type Arn.Resp-----", "\n")
+			--------------------------------------------------------
+			-- Type = Arn.Resp:                                   --
+			--------------------------------------------------------
+			
+			-- extraction du message 
+			-- (message type par exemple :1=3:0=23:6=3456)
+			local s,e,m = string.find(msg,"([%d:=-]+)")
+			--logData(message)
+			-- longueur du message
+			local l = e - s
+			-- logData(longueur)
+			-- découpe du message en commande et envoi à lockon
+			-- (commandes type 1=3  0=23  6=3456)
+			
+			local cmd,c,v,i,e,ee
+			-- cmd: commande
+			-- c: canal
+			-- v: valeur
+			-- i: index
+			-- e: fin du message précédent
+			-- ee: fin de la partie "canal" dans le message courant
+			local x = 0
+
+			while x < l do
+				-- récupération du premier message
+				_,e,cmd = string.find(msg,"([%d=-]+)", x)
+				k.log("sioc.read(): commande: "..cmd)
+				
+				-- récupération du canal
+				_,ee,c = string.find(cmd, "([%d-]+)")
+				c = tonumber(c)
+				k.log("sioc.read(): canal: "..c)
+				
+				-- récupération de la valeur
+				_,_,v = string.find(cmd, "([%d-]+)",ee+1)
+				v = tonumber(v)
+				k.log("sioc.read(): valeur: "..v)
+				
+				
+				if c == 1 and v > 0 then
+					k.log("sioc.read(): envoi de la valeur à DCS")
+					LoSetCommand(v)
+				end
+					
+				-- passage au message suivant			
+				x = y + 1
+			end
+			
+		else
+			k.log("sioc.read(): erreur: message SIOC incorrect: "..msg)
+		end
+    end
 end
 
 function rendre_hommage_au_grand_Katze()
