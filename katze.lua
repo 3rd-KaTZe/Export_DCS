@@ -9,6 +9,7 @@ k.sioc.contact = nil
 k.sioc.msg = nil
 k.sioc.connect = nil
 k.sioc.config = {}
+k.sioc.buffer = {}
 
 
 k.log = function (message)
@@ -91,10 +92,9 @@ k.sioc.write = function (k, v)
 
 	-- Décalage des exports vers une plage SIOC
 	-- Indiquer dans siocConfig.lua la plage désirée
-	k = tonumber(k) + sioc.config.plage
-	local strNew = tostring(newAtt)
+	local strNew = tostring(tonumber(k) + sioc.config.plage)
 	
-	local strValeur = string.format("%d",valeur);
+	v = string.format("%d", v);
 	
 	if (strValeur ~= Data_Buffer[strNew]) then
 		-- On stock la nouvelle valeur dans la table buffer
