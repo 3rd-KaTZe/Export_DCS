@@ -306,4 +306,8 @@ if k.sioc.ok then
 
 	k.log("  ","\n")
 	k.log("---KaTZe Log: KTZ-FPS-Check Activated ----")
-end
+	
+	local PrevLuaExportStart=LuaExportStart
+	LuaExportStart=function()
+		KTZ_DATA:KD_Start(); if PrevLuaExportStart then PrevLuaExportStart() end; end
+	end
