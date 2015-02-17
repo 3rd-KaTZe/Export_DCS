@@ -2,9 +2,16 @@ k = {} -- création de la "master table"
 k.export_fc3_done = false -- l'export de FC3 a déjà été fait, ne plus le refaire en boucle pour rien
 k.current_aircraft = nil -- appareil dans lequel l'utilisateur se trouve actuellement
 k.c -- socket
+k.log = nil
 k.log_file = nil
+k.sioc = {}
+k.sioc.contact = nil
+k.sioc.msg = nil
+k.sioc.connect = nil
+k.sioc.config = {}
 
-k.k_log = function (message)
+
+k.log = function (message)
 
 	-- Création du fichier de log des communication serveur, s'il n'existe pas
 	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
@@ -28,6 +35,76 @@ k.k_log = function (message)
 	--fichierComLog:write(string.format(" %s ; %s",os.date("%d/%m/%y %H:%M:%S"),message),"\n");
 		k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n");
 	end
+end
+
+k.sioc.connect = function ()
+	
+	k.log("sioc_connect()")
+	
+	-- va chercher la config IP dans siocConfig
+	-- on retombe sur les valeurs par défaut si on ne les trouve pas
+	host = k.sioc_config.ip or "127.0.0.1"
+    	port = k.sioc_config.port or 8092
+	k.log("sioc_connect: ip:"..host.." port:"..port)
+	
+	k.log("sioc_connect: ouverture du socket")
+	k.c = socket.try(socket.connect(host, port)) -- connect to the listener socket
+	k.log("sioc_connect: socket.tcp-nodelay: true")
+	k.c:setoption("tcp-nodelay",true) -- set immediate transmission mode
+	k.log("sioc_connect: socket.timeout: 0.1")
+	k.c:settimeout(.01) -- set the timeout for reading the socket)
+   
+------------------------------------------------------------------------
+-- 	Offset de SIOC qui seront écoutés								  --
+-- 	0001 = Commande générale										  --
+-- 	0002 = Commande spéciale										  --
+------------------------------------------------------------------------
+
+	inputs = {}
+	inputs [1]=1
+	inputs [2]=2
+	
+	local x, i
+    	local s = ""
+    
+	k.log("sioc_connect: création du handshake de SIOC")
+	for x,i in pairs(inputsTable)
+	do
+	    s = s..x..":"
+	end
+	k.log("sioc_connect: handshake SIOC: "..s)
+	
+    	k.log("sioc_connect: envoi du handshake à SIOC")
+    	socket.try(c:send("Arn.Inicio:"..s.."\n"))
+    	
+	k.sioc.contact = ("Arn.Inicio:"..s.."\n")
+	k.sioc.msg = "INIT-->;" .. messageContact
+	k.log("sioc_connect: contact: "..contact)
+	k.log("sioc_connect: msg: "..msg
+	
+end
+
+k.sioc.write = function (k, v)
+	-- k: clef
+	-- v: valeur
+
+
+	-- Décalage des exports vers une plage SIOC
+	-- Indiquer dans siocConfig.lua la plage désirée
+	k = tonumber(k) + sioc.config.plage
+	local strNew = tostring(newAtt)
+	
+	local strValeur = string.format("%d",valeur);
+	
+	if (strValeur ~= Data_Buffer[strNew]) then
+		-- On stock la nouvelle valeur dans la table buffer
+		Data_Buffer[strNew] = strValeur ;
+		-- Envoi de la nouvelle valeur
+		socket.try(c:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
+		local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
+		-- Log du message envoyé
+		--logCom(messageEnvoye)
+	end		
 end
 
 function rendre_hommage_au_grand_Katze()
