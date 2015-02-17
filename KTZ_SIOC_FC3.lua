@@ -1,6 +1,6 @@
 --[[
 **************************************************************************
-*     Module d'Export de données pour SIOC, et le KaTZ-Pit               *
+*     Module d'Export de donnÃ©es pour SIOC, et le KaTZ-Pit               *
 *     Par KaTZe     -         http://www.3rd-wing.net                    *
 *     Version 5010a  du   12/02/2015                                     *
 **************************************************************************
@@ -8,47 +8,17 @@
 
 -- siocConfig.lua contient :
 -- Script de configuration SIOC
--- Paramêtres IP : Host, Port
--- Ainsi que la plage d'Offset utilisée pour les valeurs KaTZ-Pit 
--- Si l'on veut décaler la plage rentrer une valeur (ex: 2000)
+-- ParamÃªtres IP : Host, Port
+-- Ainsi que la plage d'Offset utilisÃ©e pour les valeurs KaTZ-Pit 
+-- Si l'on veut dÃ©caler la plage rentrer une valeur (ex: 2000)
 
-dofile ( lfs.writedir().."Scripts\\siocConfig.lua" )
-local c
-
-
--- Debug Mode, si True un fichier ".csv" est créé dans le répertoire
--- Saved Games\DCS\Export
--- Fichier Type "KTZ-SIOC3000_ComLog-yyyymmjj-hhmm.csv"
--- Info. envoyés par la fonction logCom()
+-- dofile ( lfs.writedir().."Scripts\\siocConfig.lua" ) -- dÃ©placÃ© dans katze.lua
+-- local c -- dÃ©place dans katze.lua
 
 ------------------------------------------------------------------------
 --    Fonction logCom												  --
 ------------------------------------------------------------------------
-function logCom(message)
-
-	-- Création du fichier de log des communication serveur, s'il n'existe pas
-	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
-	--
-	if DEBUG_MODE and not fichierComLog then
-       	fichierComLog = io.open(lfs.writedir().."Logs\\KatzePit\\KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv", "w");
-				
-		-- Ecriture de l'entète dans le fichier
-		if fichierComLog then
-			
-			fichierComLog:write("*********************************************;\n");
-			fichierComLog:write("*     Fichier Log des Communications SIOC   *;\n");
-			fichierComLog:write("*     Par KaTZe  -  http://www.3rd-wing.net *;\n");
-			fichierComLog:write("*     Version FC3  du 02/02/2015            *;\n");
-			fichierComLog:write("*********************************************;\n\n");
-		end
-    end
-	
-	-- Ecriture des données dans le fichier existant
-	if fichierComLog then
-        --fichierComLog:write(string.format(" %s ; %s",os.date("%d/%m/%y %H:%M:%S"),message),"\n");
-		fichierComLog:write(string.format(" %s ; %s",os.clock(),message),"\n");
-	end
-end
+-- function logCom(message) -- dÃ©placÃ© dans katze.lua
 
 
 ------------------------------------------------------------------------
@@ -72,9 +42,9 @@ function Sioc_connect()
 	
    
 ------------------------------------------------------------------------
--- 	Offset de SIOC qui seront écoutés								  --
--- 	0001 = Commande générale										  --
--- 	0002 = Commande spéciale										  --
+-- 	Offset de SIOC qui seront Ã©coutÃ©s								  --
+-- 	0001 = Commande gÃ©nÃ©rale										  --
+-- 	0002 = Commande spÃ©ciale										  --
 ------------------------------------------------------------------------
 
 	inputsTable = {}
@@ -106,8 +76,8 @@ end
 function envoyerInfo(strAttribut,valeur)
 
 
-		-- Décalage des exports vers une plage SIOC
-		-- Indiquer dans siocConfig.lua la plage désirée
+		-- DÃ©calage des exports vers une plage SIOC
+		-- Indiquer dans siocConfig.lua la plage dÃ©sirÃ©e
 		newAtt = tonumber(strAttribut) + siocConfig.plageSioc
 		local strNew = tostring(newAtt)
 		
@@ -119,7 +89,7 @@ function envoyerInfo(strAttribut,valeur)
 			-- Envoi de la nouvelle valeur
 			socket.try(c:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
 			local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
-			-- Log du message envoyé
+			-- Log du message envoyÃ©
 			--logCom(messageEnvoye)
 		end		
 	end
@@ -145,19 +115,19 @@ function Reception_SIOC_Cmd()
 		typeMessage = tostring(typeMessage);
         
 		------------------------------------------------------------
-		-- Les types de message acceptés :                        --
+		-- Les types de message acceptÃ©s :                        --
 		--                                                        --
-		-- Arn.Vivo   : Le serveur à reçu "Arn.Vivo": du client   -- implementation à tester
-		--              Le serveur répond "Arn.Vivo"              --
+		-- Arn.Vivo   : Le serveur Ã  reÃ§u "Arn.Vivo": du client   -- implementation Ã  tester
+		--              Le serveur rÃ©pond "Arn.Vivo"              --
 		--														  --
-		-- Arn.Resp   : Message pour l'execution des commandes    -- réponse de SIOC
-		--              seul deux valeurs sont acceptées:         --
-		--				0=[valeur] -> le paramètres valeur(      )--
-		-- 				1=[valeur] -> le paramètre commande		  --
+		-- Arn.Resp   : Message pour l'execution des commandes    -- rÃ©ponse de SIOC
+		--              seul deux valeurs sont acceptÃ©es:         --
+		--				0=[valeur] -> le paramÃ¨tres valeur(      )--
+		-- 				1=[valeur] -> le paramÃ¨tre commande		  --
 		--				Ex:Arn.Resp:0=5000:1=3: ou Arn.Resp:1=145:--
 		--              a noter que Arn.Resp:1=0: remets le       --
-		--              cache valeur à 'nil' aussi aprés chaque   --
-		--				commande exécuté                          --
+		--              cache valeur Ã  'nil' aussi aprÃ©s chaque   --
+		--				commande exÃ©cutÃ©                          --
 		------------------------------------------------------------
 		if typeMessage == "Arn.Resp" then
 			--logData("Message type Arn.Resp-----", "\n")
@@ -173,7 +143,7 @@ function Reception_SIOC_Cmd()
 			local longueur
 			longueur = fin - debut
 			-- logData(longueur)
-			-- découpe du message en commande et envoi à lockon
+			-- dÃ©coupe du message en commande et envoi Ã  lockon
 			-- (commandes type 1=3  0=23  6=3456)
 			
 			local commande,Schan,chan,Svaleur,valeur,i,a,b,c,d,e,f,lim
@@ -191,7 +161,7 @@ function Reception_SIOC_Cmd()
 				
 				if chan ==1 and valeur > 0 then
 						
-					-- Envoi à LockOn
+					-- Envoi Ã  LockOn
 					LoSetCommand(valeur)
 				
 				end
@@ -200,7 +170,7 @@ function Reception_SIOC_Cmd()
 			end
 			
 		else
-			--logData("---Log: SIOC Message Incorrect ; non type Arn.Resp ; Message Ignoré -----", "\n")
+			--logData("---Log: SIOC Message Incorrect ; non type Arn.Resp ; Message IgnorÃ© -----", "\n")
 		end
     end
 end
@@ -211,7 +181,7 @@ end
 -- 	Export de LockOn												  --
 ------------------------------------------------------------------------
 function Envoi_Data_SIOC_fast()
-	    -- Export à la 200ms
+	    -- Export Ã  la 200ms
 		--logCom ("time de la boucle 1 - Fast")
 		--logCom(CurrentTime)
 		
@@ -220,39 +190,39 @@ function Envoi_Data_SIOC_fast()
 		envoyerInfo(104,LoGetTrueAirSpeed() * 3.6)--m/sec
 		envoyerInfo(106,LoGetMachNumber()*1000)-- mach * 1000
 		
-		envoyerInfo(112,LoGetAltitudeAboveSeaLevel()) -- Modif DCS FC3, export en mètres
-		envoyerInfo(120,LoGetAltitudeAboveGroundLevel()) -- Modif DCS FC3, export en mètres
+		envoyerInfo(112,LoGetAltitudeAboveSeaLevel()) -- Modif DCS FC3, export en mÃ¨tres
+		envoyerInfo(120,LoGetAltitudeAboveGroundLevel()) -- Modif DCS FC3, export en mÃ¨tres
 		envoyerInfo(130,LoGetVerticalVelocity()) -- m/sec
 		
 		
 		-- ============== Parametres Attitude ==============================================================
-		envoyerInfo(136,LoGetAngleOfAttack() * 573)	-- Export converti en 0.1 degrés
+		envoyerInfo(136,LoGetAngleOfAttack() * 573)	-- Export converti en 0.1 degrÃ©s
 				
-		-- Calcul de l'accélération, vecteur total G = Vx + Vy + Vz
+		-- Calcul de l'accÃ©lÃ©ration, vecteur total G = Vx + Vy + Vz
 		_Acceleration = LoGetAccelerationUnits()
 		local Gmeter = _Acceleration.y / math.abs(_Acceleration.y) * math.sqrt(math.pow(_Acceleration.x,2)+math.pow(_Acceleration.y,2)+math.pow(_Acceleration.z,2))
 		envoyerInfo(134,Gmeter*100) -- Export en x * G
 		
 		-- Table Pitch , Bank , Yaw
 		pitch,bank,yaw = LoGetADIPitchBankYaw()
-		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrés
-		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrés
-		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrés
+		envoyerInfo(140,pitch * 573) -- Export converti en 0.1 degrÃ©s
+		envoyerInfo(142,bank * 573) -- Export converti en 0.1 degrÃ©s
+		envoyerInfo(144,yaw * 573) -- Export converti en 0.1 degrÃ©s
 		
 		--envoyerInfo(131,LoGetMagneticYaw()*576) -- Indicateur virage
 		envoyerInfo(132,LoGetSlipBallPosition()*100) -- Bille
 
 		-- ============== Parametres HSI ==================================================================
 		_ControlPanel_HSI = LoGetControlPanel_HSI()
-		envoyerInfo(152,_ControlPanel_HSI.HeadingPointer * 573) -- CAP Export converti en 0.1 degrés)
-		envoyerInfo(156,_ControlPanel_HSI.ADF_raw * 573) -- Waypoint Export converti en 0.1 degrés)
-		envoyerInfo(154,_ControlPanel_HSI.RMI_raw * 573) -- Route Export converti en 0.1 degrés)
+		envoyerInfo(152,_ControlPanel_HSI.HeadingPointer * 573) -- CAP Export converti en 0.1 degrÃ©s)
+		envoyerInfo(156,_ControlPanel_HSI.ADF_raw * 573) -- Waypoint Export converti en 0.1 degrÃ©s)
+		envoyerInfo(154,_ControlPanel_HSI.RMI_raw * 573) -- Route Export converti en 0.1 degrÃ©s)
 		
 		
 		-- ============== Parametres ILS ==================================================================
 		-- a regrouper dans une seule valeur 50005000
 		envoyerInfo(702,LoGetGlideDeviation() * 100)  -- ILS UP/Down
-		envoyerInfo(704,LoGetSideDeviation() * 100)  -- ILS Latéral
+		envoyerInfo(704,LoGetSideDeviation() * 100)  -- ILS LatÃ©ral
 				
 		-- ============== Parametres Moteur ================================================================
 		_EngineInfo=LoGetEngineInfo()
@@ -286,29 +256,29 @@ function Envoi_Data_SIOC_fast()
 			--envoyerInfo(21,objPlayer.Heading*100)--ok
 		end
 		
-		-- ============== Données de Navigation ===============================================================		
+		-- ============== DonnÃ©es de Navigation ===============================================================		
 		local _Route = LoGetRoute()
 		if _Route then
 		
-		-- Calcul de distance ay Way Point Pythagore sur deltaX, deltaZ (approximation géométrie plane)
+		-- Calcul de distance ay Way Point Pythagore sur deltaX, deltaZ (approximation gÃ©omÃ©trie plane)
 		local distance = math.sqrt(math.pow(_Route.goto_point.world_point.x-myXCoord,2)+math.pow(_Route.goto_point.world_point.z-myZCoord,2))
 			envoyerInfo(162,distance);
 			
-			-- Numéro du Way Point, correction de -1 because décalage avec affichage DCS
+			-- NumÃ©ro du Way Point, correction de -1 because dÃ©calage avec affichage DCS
 			envoyerInfo(160,_Route.goto_point.this_point_num - 1); 
 			
-			-- Position x du way point, sert à KaTZ-Pit pour identifier la piste sélectionnée en mode RTN, LDG
+			-- Position x du way point, sert Ã  KaTZ-Pit pour identifier la piste sÃ©lectionnÃ©e en mode RTN, LDG
 			envoyerInfo(706,_Route.goto_point.world_point.x*100); 
-			--envoyerInfo(51,_Route.goto_point.world_point.y*100); -- inutilisé
-			--envoyerInfo(52,_Route.goto_point.world_point.z*100); -- inutilisé
-			--envoyerInfo(53,_Route.goto_point.speed_req) -- inutilisé
-			-- envoyerInfo(54,_Route.goto_point.estimated_time) -- inutilisé
+			--envoyerInfo(51,_Route.goto_point.world_point.y*100); -- inutilisÃ©
+			--envoyerInfo(52,_Route.goto_point.world_point.z*100); -- inutilisÃ©
+			--envoyerInfo(53,_Route.goto_point.speed_req) -- inutilisÃ©
+			-- envoyerInfo(54,_Route.goto_point.estimated_time) -- inutilisÃ©
 			-- envoyerInfo(51,_Route.goto_point.next_point_num)
-			--envoyerInfo(56,table.getn(_Route.route)) -- inutilisé
+			--envoyerInfo(56,table.getn(_Route.route)) -- inutilisÃ©
 		end	
 
 
-		-- ============== Parametre TWS -- En développement =======================================================		
+		-- ============== Parametre TWS -- En dÃ©veloppement =======================================================		
 		_TWSInfo = LoGetTWSInfo()
 		--logData("TWS Export ", "\n")	
 		--logData(_TWSInfo.mode)
@@ -321,7 +291,7 @@ function Envoi_Data_SIOC_fast()
 		end
 	
 		if _TWSInfo then
-		--logData("TWS Détail ", "\n")
+		--logData("TWS DÃ©tail ", "\n")
 		--for k,v in pairs(_TWSInfo.Emitters) do
 		--	    local objEmitters = LoGetObjectById(v.ID)
 					--logData(string.format(" Mission Time = %.0f secondes",CurrentTime,"\n"))
@@ -385,13 +355,13 @@ function Envoi_Data_SIOC_fast()
 	end	
 
 function Envoi_Data_SIOC_slow()
-	     -- Export à la seconde
+	     -- Export Ã  la seconde
 		--logCom ("time de la boucle 2 - Slow")
 		--logCom(CurrentTime)
 	
 		-- ============== Horloge de Mission ============================================================		
 		envoyerInfo(42,LoGetModelTime())-- Heure de la mission
-		-- envoyerInfo(11,LoGetMissionStartTime())-- envoyé en début de mission
+		-- envoyerInfo(11,LoGetMissionStartTime())-- envoyÃ© en dÃ©but de mission
 		
 		envoyerInfo(128,LoGetBasicAtmospherePressure()*10)
 		
@@ -401,14 +371,14 @@ function Envoi_Data_SIOC_slow()
 		
 		
 
-		--envoyerInfo(43,_EngineInfo.Temperature.left)--- Export en °c
-		--envoyerInfo(44,_EngineInfo.Temperature.right)--- Export en °c
-		--envoyerInfo(45,_EngineInfo.HydraulicPressure.left*10)-- inutilisé
-		--envoyerInfo(46,_EngineInfo.HydraulicPressure.right*10)-- inutilisé
-		envoyerInfo(404,_EngineInfo.fuel_internal*100)--- Export en 0.01kg (100 UK (unité kero) = 1 kg)
+		--envoyerInfo(43,_EngineInfo.Temperature.left)--- Export en Â°c
+		--envoyerInfo(44,_EngineInfo.Temperature.right)--- Export en Â°c
+		--envoyerInfo(45,_EngineInfo.HydraulicPressure.left*10)-- inutilisÃ©
+		--envoyerInfo(46,_EngineInfo.HydraulicPressure.right*10)-- inutilisÃ©
+		envoyerInfo(404,_EngineInfo.fuel_internal*100)--- Export en 0.01kg (100 UK (unitÃ© kero) = 1 kg)
 		envoyerInfo(406,_EngineInfo.fuel_external*100)--- Export en 0.01kg (100 UK = 1 kg)
 		
-		-- Consommation Fuel, non utilisée, elle est mesurée dans SIOC par Delta Fuel sur 5 secondes
+		-- Consommation Fuel, non utilisÃ©e, elle est mesurÃ©e dans SIOC par Delta Fuel sur 5 secondes
 		local EngC_L = math.floor(_EngineInfo.FuelConsumption.left * 6)
 		local EngC_R = math.floor(_EngineInfo.FuelConsumption.right * 6)
 		envoyerInfo(206,50005000 + EngC_L * 10000 + EngC_R )
@@ -417,14 +387,14 @@ function Envoi_Data_SIOC_slow()
 		-- envoyerInfo(57,_EngineInfo.FuelConsumption.right*6) --conversion kg/10sec (erreur ds LO200) en kg/mn
 		-- envoyerInfo(58,(_EngineInfo.FuelConsumption.left + _LoGetEngineInfo.FuelConsumption.right)*6)
 		
-		-- ============== Status Eléments Mécaniques ========================================================		
+		-- ============== Status ElÃ©ments MÃ©caniques ========================================================		
 		_MechInfo = LoGetMechInfo()
 				
-		-- "Truc", la valeur Check_WPS_MCP = 1 sera utilisée pour rescanner le weapon panel et les alarmes
-		-- Utilisé train sorti, et AF
+		-- "Truc", la valeur Check_WPS_MCP = 1 sera utilisÃ©e pour rescanner le weapon panel et les alarmes
+		-- UtilisÃ© train sorti, et AF
 		Check_WPS_MCP = _MechInfo.gear.status + _MechInfo.speedbrakes.status
-		--envoyerInfo(151,_MechInfo.canopy.status) -- Commande Verrière
-		envoyerInfo(602,_MechInfo.canopy.value) -- Retour Position Verrière
+		--envoyerInfo(151,_MechInfo.canopy.status) -- Commande VerriÃ¨re
+		envoyerInfo(602,_MechInfo.canopy.value) -- Retour Position VerriÃ¨re
 		
 		envoyerInfo(604,55 + _MechInfo.gear.status * 10 + _MechInfo.gear.value) -- Commande + Retour Train
 
@@ -436,20 +406,20 @@ function Envoi_Data_SIOC_slow()
 
 		
 		-- Regrouper data Mech en 555555
-		-- Gear_Main = _MechInfo.gear.main -- inutilisé
-		--envoyerInfo("1213",_LoGetMechInfo.gear.main.nose.rod)	-- inutilisé	
-		--envoyerInfo("1214",_LoGetMechInfo.gear.main.left.rod)-- inutilisé
-		--envoyerInfo("1215",_LoGetMechInfo.gear.main.right.rod)-- inutilisé
-		--envoyerInfo("1215",Gear_Main.left.rod)-- inutilisé
+		-- Gear_Main = _MechInfo.gear.main -- inutilisÃ©
+		--envoyerInfo("1213",_LoGetMechInfo.gear.main.nose.rod)	-- inutilisÃ©	
+		--envoyerInfo("1214",_LoGetMechInfo.gear.main.left.rod)-- inutilisÃ©
+		--envoyerInfo("1215",_LoGetMechInfo.gear.main.right.rod)-- inutilisÃ©
+		--envoyerInfo("1215",Gear_Main.left.rod)-- inutilisÃ©
 		
 		
 		-- ============== Status Armement ==================================================================		
 		local _PayloadInfo = LoGetPayloadInfo()		
 		
 		
-		-- Scan du Pylone sélectionné ---------------------------------------------------------------------
-		local pylone_selec = _PayloadInfo.CurrentStation  -- Pylone selectionné
-		local quantite_selec = 0 -- Quantité de munition dispo. (utilisé pour déclancher le chrono de tir de SIOC)
+		-- Scan du Pylone sÃ©lectionnÃ© ---------------------------------------------------------------------
+		local pylone_selec = _PayloadInfo.CurrentStation  -- Pylone selectionnÃ©
+		local quantite_selec = 0 -- QuantitÃ© de munition dispo. (utilisÃ© pour dÃ©clancher le chrono de tir de SIOC)
 		
 		envoyerInfo(1108,pylone_selec)
 		
@@ -462,7 +432,7 @@ function Envoi_Data_SIOC_slow()
 				end
 		end
 		
-		-- Scan du Canon sélectionné ------------------------------------------------------------------------
+		-- Scan du Canon sÃ©lectionnÃ© ------------------------------------------------------------------------
 		local canon = _PayloadInfo.Cannon.shells  -- Nombre de munitions canon restantes
 		envoyerInfo(1105,canon)
 		
@@ -486,18 +456,18 @@ function Envoi_Data_SIOC_slow()
 		
 		
 		-- Scan des Type d'arme, conditionnel ------------------------------------------------------------------------
-		-- Le Scan est déclenché à l'arrêt verrière ouverte, ou en vol à la sortie des AF
-		-- La valeur "Check_WPS_MCP" est utilisé pour déclancher le rescan du weapon panel
+		-- Le Scan est dÃ©clenchÃ© Ã  l'arrÃªt verriÃ¨re ouverte, ou en vol Ã  la sortie des AF
+		-- La valeur "Check_WPS_MCP" est utilisÃ© pour dÃ©clancher le rescan du weapon panel
 		-- A modifier lancer le scan au passage BVR, ou R2G (R-R, R-Sol)
 			
 		if Check_WPS_MCP == 1 then
-			-- le weapon panel type a changé, on le scan
+			-- le weapon panel type a changÃ©, on le scan
 			
 			-- Reset du panel armement et du nombre de fuel tank
 			WeaponInit()
 			local tank_nb = 0
 			
-			-- Scan du panel armement et envoi à SIOC
+			-- Scan du panel armement et envoi Ã  SIOC
 			for pylone=1,13 do
 				if _PayloadInfo.Stations[pylone]~=nil then
 					type_arme = _PayloadInfo.Stations[pylone].weapon
@@ -511,7 +481,7 @@ function Envoi_Data_SIOC_slow()
 					ammo_typ = type_1 * 1000000 + type_2 * 10000 + type_3 * 100 + type_4		
 					envoyerInfo(1125+pylone,ammo_typ)
 
-					-- incrément du nombre de fuel tank
+					-- incrÃ©ment du nombre de fuel tank
 						if type_1 == 1 then
 							tank_nb = tank_nb + 1
 						end	
@@ -521,15 +491,15 @@ function Envoi_Data_SIOC_slow()
 			envoyerInfo(1106,tank_nb)
 		end
 		
-		-- Scan des Quantités et Container, systématique chaque seconde --------------------------------------------
-		-- Possibilité de le rendre conditionnel avec une variable checksum voir "if" ci dessous
+		-- Scan des QuantitÃ©s et Container, systÃ©matique chaque seconde --------------------------------------------
+		-- PossibilitÃ© de le rendre conditionnel avec une variable checksum voir "if" ci dessous
 		-- Comptage du nombre de munitions + paniers et export 
 		for pylone=1,13 do
 			if _PayloadInfo.Stations[pylone]~=nil then
 				ammo = _PayloadInfo.Stations[pylone].count -- Lecture du nombre de munition restante
-				container = _PayloadInfo.Stations[pylone].container and 1 or 0 -- Lecture et conversion en int, de la présence d'un pod
-				ammo_export = ammo + container * 1000 -- valeur exporté = "ammo" ou "1000 + Ammo"
-				-- un chiffre sur 4 digits, C:QQQ avec le container, puis la quantité d'ammo
+				container = _PayloadInfo.Stations[pylone].container and 1 or 0 -- Lecture et conversion en int, de la prÃ©sence d'un pod
+				ammo_export = ammo + container * 1000 -- valeur exportÃ© = "ammo" ou "1000 + Ammo"
+				-- un chiffre sur 4 digits, C:QQQ avec le container, puis la quantitÃ© d'ammo
 						
 				quant_checksum = quant_checksum + ammo_export
 				
@@ -583,7 +553,7 @@ function Envoi_Data_SIOC_slow()
 		_MCP = LoGetMCPState()
 		
 		if _MCP then
-			-- Conversion des variables Boléenne en Nombre 0 ou 1
+			-- Conversion des variables BolÃ©enne en Nombre 0 ou 1
 			envoyerInfo(580,_MCP.MasterWarning and 1 or 0);
 						
 			if _MCP.MasterWarning or Check_WPS_MCP == 1 then   
@@ -636,7 +606,7 @@ function Envoi_Data_SIOC_slow()
 		
 				
 		
---[[  Old MPC à modifier		-- MPC State *******************************
+--[[  Old MPC Ã  modifier		-- MPC State *******************************
 		_LoGetMCPState = LoGetMCPState()
 		local _compteur = 0
 		local _MCPState = 0
@@ -647,15 +617,15 @@ function Envoi_Data_SIOC_slow()
 			end
 			_compteur = _compteur + 1
 		end
-		envoyerInfo("71",_MCPState) -- Voir détails dans notice
+		envoyerInfo("71",_MCPState) -- Voir dÃ©tails dans notice
 ]]--			
 	end
 
 	
-	-- Mise à zero initiale du panel armement (CHECK , Six pylones ... autres avions ???)
+	-- Mise Ã  zero initiale du panel armement (CHECK , Six pylones ... autres avions ???)
 function WeaponInit()
 		local pylone
-		--logData(" Mise à zero du panel armement")
+		--logData(" Mise Ã  zero du panel armement")
 				
 		envoyerInfo(1110,0)
 		envoyerInfo(1105,0)
@@ -673,8 +643,8 @@ end
 	
 	
 	------------------------------------------------------------------------
-	--    Fonction pour le calcul des coordonnées 						  --
-	--	  Merci à Mnemonic                           					  --
+	--    Fonction pour le calcul des coordonnÃ©es 						  --
+	--	  Merci Ã  Mnemonic                           					  --
 	------------------------------------------------------------------------
 	getXYCoords = function(inLatitudeDegrees, inLongitudeDegrees) -- args: 2 numbers // Return two value in order: X, Y
         local pi = 3.141592
@@ -732,47 +702,47 @@ Sioc_OK = true
 Data_Buffer = {}
 
 
-logCom("Connection à SIOC, ouverture Socket")
+logCom("Connection Ã  SIOC, ouverture Socket")
 package.path  = package.path..";.\\LuaSocket\\?.lua"
 package.cpath = package.cpath..";.\\LuaSocket\\?.dll"
 socket = require("socket")
 	
 	
-	-- Gestion des erreurs de connection à SIOC
+	-- Gestion des erreurs de connection Ã  SIOC
 	if pcall(Sioc_connect) then
 		logCom("SIOC Connection OK")
 		Sioc_OK = true
 	else
-		logCom("SIOC Connection problème, pas de SIOC")
+		logCom("SIOC Connection problÃ¨me, pas de SIOC")
 		Sioc_OK = false
 	end
 
 
 if Sioc_OK then
 	
-	-- Mise à zero du panel armement dans SIOC
+	-- Mise Ã  zero du panel armement dans SIOC
 	WeaponInit()
 	
-	-- Envoi à SIOC de l'heure de début de mission
+	-- Envoi Ã  SIOC de l'heure de dÃ©but de mission
 	StartTime = LoGetMissionStartTime()
 	envoyerInfo(41,StartTime)
 	
 	CurrentTime = LoGetModelTime()
 -- Va chercher la config IP dans siocConfig
-   	--SamplingPeriod_1 = 0.1 -- Interval de séquence rapide en secondes (défaut 100 millisecondes)
-	--SamplingPeriod_2 = 0.5   -- Interval de séquence lente en secondes (défaut 0.5 seconde)
+   	--SamplingPeriod_1 = 0.1 -- Interval de sÃ©quence rapide en secondes (dÃ©faut 100 millisecondes)
+	--SamplingPeriod_2 = 0.5   -- Interval de sÃ©quence lente en secondes (dÃ©faut 0.5 seconde)
 	SamplingPeriod_1 = (siocConfig.timing_fast / 1000) or 0.1
 	SamplingPeriod_2 = (siocConfig.timing_slow / 1000) or 0.5
-	SamplingPeriod_FPS = 5  -- Interval de mesure des fps (défaut 5 secondes)
+	SamplingPeriod_FPS = 5  -- Interval de mesure des fps (dÃ©faut 5 secondes)
 
 	logCom("  ","\n")
-	logCom("--- Initialisation du Séquenceur ---" ,"\n")
+	logCom("--- Initialisation du SÃ©quenceur ---" ,"\n")
 	logCom(string.format(" Mission Start Time (secondes) = %.0f",StartTime,"\n"))	
 	logCom(string.format(" Sampling Period 1 = %.1f secondes",SamplingPeriod_1,"\n"))
 	logCom(string.format(" Sampling Period 2 = %.1f secondes",SamplingPeriod_2,"\n"))
 	logCom(string.format(" Sampling Period FPS = %.1f secondes",SamplingPeriod_FPS,"\n"))
 
-	-- Initialisation des déclencheurs rapides, lents et FPS
+	-- Initialisation des dÃ©clencheurs rapides, lents et FPS
 	NextSampleTime_1 = CurrentTime + SamplingPeriod_1
 	NextSampleTime_2 = CurrentTime + SamplingPeriod_2
 	NextSampleTime_FPS = CurrentTime + SamplingPeriod_FPS
@@ -794,7 +764,7 @@ end
 
 KTZ_DATA =
 {
-	-- Fonction au démarrage mission -------------------------------------------------------------------------
+	-- Fonction au dÃ©marrage mission -------------------------------------------------------------------------
 	KD_Start=function(self)
 	
 		logCom("  ","\n")
@@ -808,32 +778,32 @@ KTZ_DATA =
 				
 	end,
 	
-	-- Fonction après chaque image ------------------------------------------------------------------------------------
+	-- Fonction aprÃ¨s chaque image ------------------------------------------------------------------------------------
 	KD_AfterNextFrame=function(self)
-		-- Récupération du Time Code, utilisé par le séquenceur pour test et déclancher les séquences rapides et lentes
-		-- Incrémentation du compteur de FPS
+		-- RÃ©cupÃ©ration du Time Code, utilisÃ© par le sÃ©quenceur pour test et dÃ©clancher les sÃ©quences rapides et lentes
+		-- IncrÃ©mentation du compteur de FPS
 		fps_counter = fps_counter + 1
 		CurrentTime = LoGetModelTime()
 	end,
 
-	-- Fonction à chaque intervalle de temps type 1 -----------------------------------------------------------------------
-	-- Séquence rapide : défaut 100 millisecondes
+	-- Fonction Ã  chaque intervalle de temps type 1 -----------------------------------------------------------------------
+	-- SÃ©quence rapide : dÃ©faut 100 millisecondes
 	KD_AtInterval_1=function(self)
 				
 		-- calcul de la date de fin du prochain intervalle de temps
 		NextSampleTime_1 = CurrentTime + SamplingPeriod_1
 			
 		if Sioc_OK then
-			-- Fonction d'envoi des données à SIOC (liste fast)
+			-- Fonction d'envoi des donnÃ©es Ã  SIOC (liste fast)
 			Envoi_Data_SIOC_fast()
-			-- Option Réception des ordres de SIOC séquence rapide (par défaut dans la séquence lente)
+			-- Option RÃ©ception des ordres de SIOC sÃ©quence rapide (par dÃ©faut dans la sÃ©quence lente)
 			Reception_SIOC_Cmd()
 		end
 	
 	end,
 
-	-- Fonction à chaque intervalle de temps type 2 -----------------------------------------------------------------------
-	-- Séquence lente : défaut 0.5 seconde
+	-- Fonction Ã  chaque intervalle de temps type 2 -----------------------------------------------------------------------
+	-- SÃ©quence lente : dÃ©faut 0.5 seconde
 	KD_AtInterval_2=function(self)
 				
 		-- logCom(string.format("*** Fonction KD_AtInterval_2 @= %.2f",CurrentTime,"\n"))
@@ -841,14 +811,14 @@ KTZ_DATA =
 		NextSampleTime_2 = CurrentTime + SamplingPeriod_2
 		
 		if Sioc_OK then
-			-- Fonction d'envoi des données à SIOC (liste lente)
+			-- Fonction d'envoi des donnÃ©es Ã  SIOC (liste lente)
 			Envoi_Data_SIOC_slow()
 		end	
 						
 	end,	
 	
-	-- Fonction à chaque intervalle de temps de mesure FPS  -----------------------------------------------------------------------
-	-- Défaut 5 secondes	
+	-- Fonction Ã  chaque intervalle de temps de mesure FPS  -----------------------------------------------------------------------
+	-- DÃ©faut 5 secondes	
 	KD_AtInterval_FPS=function(self)
 	
 		fps_tot = fps_tot + fps_counter -- Compteur du total de frames
@@ -878,7 +848,7 @@ KTZ_DATA =
 			end
 		end
 
-		-- remise à zero du compteur de frame de l'intervalle de temps
+		-- remise Ã  zero du compteur de frame de l'intervalle de temps
 		fps_counter = 0
 		-- calcul de la date de fin du prochain intervalle de temps
 		NextSampleTime_FPS = CurrentTime + SamplingPeriod_FPS
@@ -902,7 +872,7 @@ end,
 	logCom("*** Fin du Vol ***")
 	logCom("  ","\n")
 		
-	-- log des résultats
+	-- log des rÃ©sultats
 	logCom(string.format(" Flight Duration = %.0f secondes",CurrentTime,"\n"))
 	logCom("  ","\n")
 	logCom("*** Information de FPS, histogramme sur le vol ***")
@@ -921,16 +891,16 @@ end,
 	logCom("  ","\n")
 
 	
-	logCom("Miaou à tous !!!")
+	logCom("Miaou Ã  tous !!!")
 		
 	end,
 		
 }
 
 
--- Declencheur de séquence (depuis export.lua)
+-- Declencheur de sÃ©quence (depuis export.lua)
 ------------------------------------------------------------------------
---    Séquence : Démarrage de mission (ExportStart)    			  --
+--    SÃ©quence : DÃ©marrage de mission (ExportStart)    			  --
 ------------------------------------------------------------------------
 
 do
@@ -946,15 +916,15 @@ do
 end
 
 ------------------------------------------------------------------------
---    Séquence : avant chaque image            							  --
+--    SÃ©quence : avant chaque image            							  --
 ------------------------------------------------------------------------
--- Rien par défaut
+-- Rien par dÃ©faut
 
 do
 	local PrevLuaExportBeforeNextFrame=LuaExportBeforeNextFrame;
 
 	LuaExportBeforeNextFrame=function()
-		-- Non actif par défaut 
+		-- Non actif par dÃ©faut 
 		-- KTZ_DATA:KD_BeforeNextFrame();
 						
 		if PrevLuaExportBeforeNextFrame then
@@ -964,9 +934,9 @@ do
 end
 
 ------------------------------------------------------------------------
---    Séquence : après chaque image            						  --
+--    SÃ©quence : aprÃ¨s chaque image            						  --
 ------------------------------------------------------------------------
--- On compare le time code avec les compteurs de déclenchement
+-- On compare le time code avec les compteurs de dÃ©clenchement
 
 do
 	local PrevLuaExportAfterNextFrame=LuaExportAfterNextFrame;
@@ -974,13 +944,13 @@ do
 	LuaExportAfterNextFrame=function()
 		KTZ_DATA:KD_AfterNextFrame();
 			if CurrentTime >= NextSampleTime_1 then
-				KTZ_DATA:KD_AtInterval_1();  -- Déclencheur séquence rapide
+				KTZ_DATA:KD_AtInterval_1();  -- DÃ©clencheur sÃ©quence rapide
 			end
 			if CurrentTime >= NextSampleTime_2 then
-				KTZ_DATA:KD_AtInterval_2();  -- Déclencheur séquence lente
+				KTZ_DATA:KD_AtInterval_2();  -- DÃ©clencheur sÃ©quence lente
 			end
 			if CurrentTime >= NextSampleTime_FPS then
-				KTZ_DATA:KD_AtInterval_FPS(); -- Déclencheur séquence ultra lente
+				KTZ_DATA:KD_AtInterval_FPS(); -- DÃ©clencheur sÃ©quence ultra lente
 			end
 			
 		if PrevLuaExportAfterNextFrame then
@@ -991,7 +961,7 @@ end
 
 
 ------------------------------------------------------------------------
---    Séquence : Fin de mission (ExportStop)         				  --
+--    SÃ©quence : Fin de mission (ExportStop)         				  --
 ------------------------------------------------------------------------
 
 do
