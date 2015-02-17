@@ -1,15 +1,23 @@
 k = {} -- création de la "master table"
+
+k.debug = true
+
 k.export_fc3_done = false -- l'export de FC3 a déjà été fait, ne plus le refaire en boucle pour rien
 k.current_aircraft = nil -- appareil dans lequel l'utilisateur se trouve actuellement
-k.log = nil
-k.log_file = nil
+k.log = nil -- fonction de logging
+k.log_file = nil -- fichier log
 k.sioc = {}
 k.sioc.socket = nil
 k.sioc.contact = nil
 k.sioc.msg = nil
 k.sioc.connect = nil
+k.sioc.write = nil
+k.sioc.read = nil
 k.sioc.config = {}
 k.sioc.buffer = {}
+
+k.fast = nil -- fonction d'export rapide
+k.slow = nil -- fonction 
 
 
 k.log = function (message)
@@ -17,7 +25,7 @@ k.log = function (message)
 	-- Création du fichier de log des communication serveur, s'il n'existe pas
 	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
 	--
-	if DEBUG_MODE then
+	if k.debug then
 		
 		if not k.log_file then
 			-- création du fichier log si nécessaire
