@@ -19,6 +19,8 @@ k.mi8.export.slow = function(self)
 	
 		-- ============== Horloge de Mission ============================================================		
 		k.sioc.send(42,LoGetModelTime())-- Heure de la mission
+		k.sioc.send(48,MainPanel:get_argument_value(52)*43200)-- Flight Time en secondes (12hr * 60mn * 60sec)
+		k.sioc.send(52,MainPanel:get_argument_value(54)*3600)-- Chronometre en secondes (1 tour de cadran = 60mn * 60sec)
 		
 		
 		-- ============== Parametres de Vol (lents) ====================================================

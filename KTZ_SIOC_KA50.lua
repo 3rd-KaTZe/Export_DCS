@@ -20,8 +20,8 @@ k.ka50.export.slow = function(self)
 
 	-- ============== Horloge de Mission ============================================================		
 	k.sioc.send(42,LoGetModelTime())-- Heure de la mission en secondes
-	k.sioc.send(48,MainPanel:get_argument_value(72)*43200)-- Flight Time en minutes
-	k.sioc.send(52,MainPanel:get_argument_value(73)*1800)-- Chronometre en secondes
+	k.sioc.send(48,MainPanel:get_argument_value(72)*43200)-- Flight Time en secondes (12hr * 60mn * 60sec)
+	k.sioc.send(52,MainPanel:get_argument_value(73)*1800)-- Chronometre en secondes (1 tour de cadran = 30mn * 60sec)
 
 	
 		
