@@ -1,11 +1,11 @@
  
 
--- Si vous faites tourner "SIOC"  sur le même PC que LockOn 
+-- Si vous faites tourner "SIOC"  sur le mï¿½me PC que LockOn 
 -- Mettre l'IP de SIOC 127.0.01 (local host) et port 8092
 -- (ENG) If you run SIOC on the same PC as LockOn
 -- Set the host IP and port for the SIOC server. 127.0.0.1 = localhost
 
-siocConfig = {hostIP = "127.0.0.1", hostPort = 8092, plageSioc = 0000, timing_fast = 100, timing_slow = 500}
+k.config.sioc = {ip = "127.0.0.1", port = 8092, plage = 0000, fast = 100, slow = 500, fps=5}
 
 -- Si vous faites tourner "SIOC"  sur un 2eme PC  
 -- Mettre l'IP de ce 2eme PC 192.168.x.xxx  et port 8092
