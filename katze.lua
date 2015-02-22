@@ -81,19 +81,22 @@ end
 -------------------------------------------------------------------------------
 -- Fichier de configuration
 k.log("chargement du fichier de configuration")
-dofile ( lfs.writedir().."Scripts\\siocConfig.lua" ) -- parsing des options
-k.config.sioc.fast = (k.config.sioc.fast or 100) / 1000 -- intervalle boucle d'export rapide
-k.config.sioc.slow = (k.config.sioc.slow or 500) / 1000 -- intervalle boucle d'export lente
-k.config.sioc.ip = k.config.sioc.ip or "127.0.0.1" -- IP serveur SIOC
-k.config.sioc.port = k.config.sioc.port or 8092 -- port serveur SIOC
-k.config.fps = k.config.fps or 5 -- intervalle échantillonages FPS
-k.log("fast: "..k.config.sioc.fast)
-k.log("slow: "..k.config.sioc.slow)
-k.log("sioc ip: "..k.config.sioc.ip)
-k.log("sioc port: "..k.config.sioc.port)
-k.log("intervalle FPS: "..k.config.fps)
+dofile ( lfs.writedir().."Scripts\\katze_config.lua" )
 
+k.sioc.ip = k.sioc.ip or "127.0.0.1" -- IP serveur SIOC
+k.log("IP serveur SIOC: "..k.sioc.ip)
 
+k.sioc.port = k.sioc.port or 8092 -- port serveur SIOC
+k.log("port serveur SIOC: "..k.sioc.port)
+
+k.loop.sample.fast = (k.loop.sample.fast or 100) / 1000 -- intervalle boucle d'export rapide
+k.log("Export rapide: toutes les "..k.loop.sample.fast.." secondes")
+
+k.loop.sample.slow = (k.loop.sample.slow or 500) / 1000 -- intervalle boucle d'export lente
+k.log("Export lent: toutes les "..k.loop.sample.slow.." secondes")
+
+k.loop.sample.fps = k.loop.sample.fps or 5 -- intervalle échantillonages FPS
+k.log("Export des FPS: toutes les "..k.loop.sample.fps.." secondes")
 
 dofile(lfs.writedir().."Scripts\\sioc.lua")
 dofile(lfs.writedir().."Scripts\\common.lua")
@@ -178,9 +181,6 @@ k.log("tentative de connexion à SIOC")
 k.sioc.connect()
 if k.sioc.ok then
 	k.log("SIOC connecté")
-	k.loop.sample.fast = k.config.sioc.fast
-	k.loop.sample.slow = k.config.sioc.slow
-	k.loop.sample.fps = k.config.sioc.fps
 	k.loop.start_time = LoGetMissionStartTime()
 	k.loop.current_time = LoGetModelTime()
 		

@@ -8,8 +8,8 @@ k.sioc.connect = function () -- fonction de connection à sioc
 	
 	k.log("sioc_connect()")
 	-- on retombe sur les valeurs par défaut si on ne les trouve pas
-	host = k.config.sioc.ip or "127.0.0.1"
-    port = k.config.sioc.port or 8092
+	local host = k.sioc.ip or "127.0.0.1"
+    local port = k.sioc.port or 8092
 	k.log("sioc_connect: ip:"..host.." port:"..port)
 	
 	k.log("sioc_connect: ouverture du socket")
@@ -25,9 +25,10 @@ k.sioc.connect = function () -- fonction de connection à sioc
 -- 	0002 = Commande spéciale										  --
 ------------------------------------------------------------------------
 
-	inputs = {}
-	inputs [1]=1
-	inputs [2]=2
+	local inputs = {
+        [1] = 1,
+        [2] = 2,
+    }
 	
 	local x, i
     	local s = ""
@@ -52,7 +53,7 @@ end
 k.sioc.send = function (strAttribut,valeur)
 
 		-- Option possible : Décalage des exports vers une plage SIOC
-		-- Indiquer dans siocConfig.lua la plage désirée
+		-- Indiquer dans katze_config.lua la plage désirée
 		-- newAtt = tonumber(strAttribut) + siocConfig.plageSioc
 		k.log("attrib: "..strAttribut)
 		k.log("valeur: "..valeur)
