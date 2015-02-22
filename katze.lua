@@ -39,13 +39,13 @@ end
 -------------------------------------------------------------------------------
 -- Logging & debug
 k.debug_enabled = true
-k.debug_file = nil
+k.debug_file = false
 
 k.make_log_file = function()
 	-- création, si nécessaire, di fichier de log
 	if not k.debug_file then
 		-- création du fichier log si nécessaire
-		local p = lfs.writedir().."/Logs/KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv"
+		local p = lfs.writedir().."/Logs/KatzePit/KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv"
        		k.debug_file = io.open(p, "w")
 		-- Ecriture de l'entête dans le fichier
 		if k.debug_file then
