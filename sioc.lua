@@ -1,8 +1,6 @@
--------------------------------------------------------------------------------
--- Initialisation de SIOC
-k.sioc.ok = false -- "true" si le socket SIOC est connecté
-k.sioc.socket = require("socket") -- socket SIOC client
-k.sioc.buffer = {} -- tampon SIOC
+
+
+
 
 k.sioc.connect = function () -- fonction de connection à sioc
 	

@@ -1,10 +1,17 @@
+-- Chargement des packages nécessaires à la création du socket SIOC
 package.path  = package.path..";.\\LuaSocket\\?.lua"
 package.cpath = package.cpath..";.\\LuaSocket\\?.dll"
 
+-- Initialisation de la table principale
 k = {}
 k.current_aircraft = nil
 k.config = {}
+
 k.sioc = {}
+k.sioc.ok = false -- "true" si le socket SIOC est connecté
+k.sioc.socket = require("socket") -- socket SIOC client
+k.sioc.buffer = {} -- tampon SIOC
+
 k.loop = {} -- boucles d'export
 k.loop = {}
 k.loop.fast = nil
@@ -62,7 +69,9 @@ k.log = function (message)
 			k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n")
 		end
 		-- Ecriture dans "dcs.log"
-		env.info("KTZ_PIT: "..message)
+        if env ~= nil then
+		    env.info("KTZ_PIT: "..message)
+        end
 	end
 end
 
@@ -76,29 +85,33 @@ k.info = function(message)
 		k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n")
 	end
 	-- Ecriture dans "dcs.log"
-	env.info("KTZ_PIT: "..message)
+    if env ~= nil then
+	    env.info("KTZ_PIT: "..message)
+    end
 end
--------------------------------------------------------------------------------
--- Fichier de configuration
-k.log("chargement du fichier de configuration")
+
+k.info("chargement du fichier de configuration")
 dofile ( lfs.writedir().."Scripts\\katze_config.lua" )
 
 k.sioc.ip = k.sioc.ip or "127.0.0.1" -- IP serveur SIOC
-k.log("IP serveur SIOC: "..k.sioc.ip)
+k.info("IP serveur SIOC: "..k.sioc.ip)
 
 k.sioc.port = k.sioc.port or 8092 -- port serveur SIOC
-k.log("port serveur SIOC: "..k.sioc.port)
+k.info("port serveur SIOC: "..k.sioc.port)
 
 k.loop.sample.fast = (k.loop.sample.fast or 100) / 1000 -- intervalle boucle d'export rapide
-k.log("Export rapide: toutes les "..k.loop.sample.fast.." secondes")
+k.info("Export rapide: toutes les "..k.loop.sample.fast.." secondes")
 
 k.loop.sample.slow = (k.loop.sample.slow or 500) / 1000 -- intervalle boucle d'export lente
-k.log("Export lent: toutes les "..k.loop.sample.slow.." secondes")
+k.info("Export lent: toutes les "..k.loop.sample.slow.." secondes")
 
 k.loop.sample.fps = k.loop.sample.fps or 5 -- intervalle échantillonages FPS
-k.log("Export des FPS: toutes les "..k.loop.sample.fps.." secondes")
+k.info("Export des FPS: toutes les "..k.loop.sample.fps.." secondes")
 
+k.info('Chargement de sioc.lua')
 dofile(lfs.writedir().."Scripts\\sioc.lua")
+
+k.info('Chargement de common.lua')
 dofile(lfs.writedir().."Scripts\\common.lua")
 
 
