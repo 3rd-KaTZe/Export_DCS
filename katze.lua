@@ -38,7 +38,7 @@ end
 
 -------------------------------------------------------------------------------
 -- Logging & debug
-k.debug_enabled = true
+k.debug_enabled = false
 k.debug_file = false
 
 k.make_log_file = function()
