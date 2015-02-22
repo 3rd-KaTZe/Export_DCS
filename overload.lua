@@ -110,23 +110,8 @@ LuaExportAfterNextFrame = function()
 		-- Interval de mesure des fps (defaut 5 secondes)
 		-- Incrément des frames totale de mission
 		k.loop.fps.total = k.loop.fps.total + k.loop.fps.counter
-		
-		-- Classement du nombre de frames de l'intervalle de temps dans l'histogramme
-		if k.loop.fps.counter < 10 * k.loop.sample.fps then
-			k.loop.fps[10] = k.loop.fps[10] + k.loop.fps.counter
-		elseif k.loop.fps.counter < 20 * k.loop.sample.fps then
-			k.loop.fps[20] = k.loop.fps[20] + k.loop.fps.counter
-		elseif k.loop.fps.counter < 30 * k.loop.sample.fps then
-			k.loop.fps[30] = k.loop.fps[30] + k.loop.fps.counter
-		elseif k.loop.fps.counter < 40 * k.loop.sample.fps then
-			k.loop.fps[40] = k.loop.fps[40] + k.loop.fps.counter
-		elseif k.loop.fps.counter < 50 * k.loop.sample.fps then
-			k.loop.fps[50] = k.loop.fps[50] + k.loop.fps.counter
-		elseif k.loop.fps.counter < 60 * k.loop.sample.fps then
-			k.loop.fps[60] = k.loop.fps[60] + k.loop.fps.counter
-		else
-			k.loop.fps[70] = k.loop.fps[70] + k.loop.fps.counter
-		end	
+        local fps = math.min(math.floor((k.loop.fps.counter / k.loop.sample.fps + 10) / 10 ) * 10, 70)
+        k.loop.fps[fps] = k.loop.fps[fps] + k.loop.fps.counter
 		
 		-- remise à zero du compteur de frame de l'intervalle de temps
 		k.loop.fps.counter = 0

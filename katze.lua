@@ -3,43 +3,33 @@ package.path  = package.path..";.\\LuaSocket\\?.lua"
 package.cpath = package.cpath..";.\\LuaSocket\\?.dll"
 
 -- Initialisation de la table principale
-k = {}
-k.current_aircraft = nil
-k.config = {}
-k.common = {}
-k.sioc = {}
-k.sioc.ok = false -- "true" si le socket SIOC est connecté
-k.sioc.socket = require("socket") -- socket SIOC client
-k.sioc.buffer = {} -- tampon SIOC
-
-k.loop = {} -- boucles d'export
-k.loop = {}
-k.loop.fast = nil
-k.loop.slow = nil
-k.export = {
-    ka50 = {},
-    mi8 = {},
-    uh1 = {},
-    fc3 = {}
-}
-k.loop.sample = {fast=0.1, slow=0.5, fps=5}
-k.loop.next_sample = {fast=0, slow=0, fps=0}
-k.loop.start_time = nil
-k.loop.current_time = nil
-k.loop.fps = {
-    counter = 0,
-    total = 0,
+k = {
+    debug_enabled = false,
+    debug_file = false,
+    current_aircraft = nil,
+    config = {},
+    common = {},
+    sioc = {
+        ok = false, -- "true" si le socket SIOC est connecté
+        socket = require("socket"), -- socket SIOC client
+        buffer = {}, -- tampon SIOC
+    },
+    loop = {
+        fast = function() end,
+        slow = function() end,
+        sample = { fast=0.1, slow=0.5, fps=5 },
+        next_sample = { fast=0, slow=0, fps=0 },
+        fps = { counter = 0, total = 0, },
+        start_time = 0,
+        current_time = 0,
+    },
+    export = { ka50 = {}, mi8 = {}, uh1 = {}, fc3 = {} },
 }
 
 k.file_exists = function(p)
 	local f=io.open(p,'r')
 	if f~=nil then io.close(f) return  true else return false end
 end
-
--------------------------------------------------------------------------------
--- Logging & debug
-k.debug_enabled = false
-k.debug_file = false
 
 k.make_log_file = function()
 	-- création, si nécessaire, di fichier de log
@@ -122,14 +112,7 @@ end
 k.mission_start = function()
 	k.debug("début d'une nouvelle mission")
 	k.debug("remise à zéro des compteurs de FPS")
-	k.loop.fps = {}
-	k.loop.fps[10] = 0
-	k.loop.fps[20] = 0
-	k.loop.fps[30] = 0
-	k.loop.fps[40] = 0
-	k.loop.fps[50] = 0
-	k.loop.fps[60] = 0
-	k.loop.fps[70] = 0
+	k.loop.fps = {[10]=0, [20]=0, [30]=0, [40]=0, [50]=0, [60]=0, [70]=0}
     k.loop.fps.counter = 0
     k.loop.fps.total = 0
 	-- Mise à zero du panel armement dans SIOC
@@ -137,10 +120,10 @@ k.mission_start = function()
 	k.debug("test de la connexion avec SIOC")
 	if k.sioc.ok then
 		k.debug("SIOC est connecté")
-		if k.exportFC3done then
-			k.debug("remise à zéro du panel d'armement de FC3")
-			k.export.fc3.weapon_init()
-		end
+
+        k.debug("remise à zéro du panel d'armement de FC3")
+        k.export.fc3.weapon_init()
+
 		k.debug("envoi à SIOC de l'heure de début de mission")
 		k.sioc.send(41,k.loop.start_time)
 	else
@@ -151,19 +134,10 @@ end
 k.mission_end = function()
 	k.info("  ","\n")
 	k.info("--- Rapport de Vol ---" ,"\n")
-	k.info(string.format(" Mission Start Time (secondes) = %.0f",k.loop.start_time,"\n"))
-	k.info(string.format(" Sampling Period 1 = %.1f secondes",k.loop.sample.fast,"\n"))
-	k.info(string.format(" Sampling Period 2 = %.1f secondes",k.loop.sample.slow,"\n"))
-	k.info(string.format(" Sampling Period FPS = %.1f secondes",k.loop.sample.fps,"\n"))
-	-- imprimer l'histogramme FPS
-	k.loop.fps_histo = {}
-	k.loop.fps_histo[10] = k.loop.fps[10] / k.loop.fps.total * 100
-	k.loop.fps_histo[20] = k.loop.fps[20] / k.loop.fps.total * 100
-	k.loop.fps_histo[30] = k.loop.fps[30] / k.loop.fps.total * 100
-	k.loop.fps_histo[40] = k.loop.fps[40] / k.loop.fps.total * 100
-	k.loop.fps_histo[50] = k.loop.fps[50] / k.loop.fps.total * 100
-	k.loop.fps_histo[60] = k.loop.fps[60] / k.loop.fps.total * 100
-	k.loop.fps_histo[70] = k.loop.fps[70] / k.loop.fps.total * 100
+	k.info(string.format(" Début de la mission : %.0f secondes",k.loop.start_time,"\n"))
+	k.info(string.format(" Boucle rapide       : %.1f secondes",k.loop.sample.fast,"\n"))
+	k.info(string.format(" Boucle lente        : %.1f secondes",k.loop.sample.slow,"\n"))
+	k.info(string.format(" Boucle FPS          : %.1f secondes",k.loop.sample.fps,"\n"))
 	
 	-- log des résultats
 	k.info(string.format(" Total Number of Frames = %.0f",k.loop.fps.total,"\n"))
@@ -171,20 +145,32 @@ k.mission_end = function()
 	k.info("  ","\n")
 	k.info(string.format("*** Average FPS =  %.1f ",k.loop.fps.total/k.loop.current_time,"\n"))
 	k.info("  ","\n")
-	k.info(string.format("*** FPS < 10      = %.1f percent",k.loop.fps_histo[10],"\n"))
-	k.info(string.format("*** 10 < FPS < 20 = %.1f percent",k.loop.fps_histo[20],"\n"))
-	k.info(string.format("*** 20 < FPS < 30 = %.1f percent",k.loop.fps_histo[30],"\n"))
-	k.info(string.format("*** 30 < FPS < 40 = %.1f percent",k.loop.fps_histo[40],"\n"))
-	k.info(string.format("*** 40 < FPS < 50 = %.1f percent",k.loop.fps_histo[50],"\n"))
-	k.info(string.format("*** 50 < FPS < 60 = %.1f percent",k.loop.fps_histo[60],"\n"))
-	k.info(string.format("*** 60 < FPS      = %.1f percent",k.loop.fps_histo[70],"\n"))
+    for i=10, 70, 10 do
+        local fps = k.loop.fps[i] / k.loop.fps.total * 100
+        k.info(string.format("*** "..(i>10 and (i-10).." < " or "     ").."FPS".. (i < 70 and " < "..(i) or "     ") .." = %.1f percent", fps,"\n"))
+    end
 	k.info("  ","\n")
 	k.info("Miaou à tous !!!")
-	
-	
-	
-	
-	
+    k.info('         *                  *')
+    k.info('             __                *')
+    k.info("          ,db'    *     *")
+    k.info('         ,d8/       *        *    *')
+    k.info('         888')
+    k.info('         `db\       *     *')
+    k.info('           `o`_                    **')
+    k.info('      *               *   *    _      *')
+    k.info('            *                 / )')
+    k.info('         *    (\__/) *       ( (  *')
+    k.info('       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.')
+    k.info('      | @|  ={      }= | @|  / / | @|o |')
+    k.info('     _j__j__j_)     `-------/ /__j__j__j_')
+    k.info('     ________(               /___________')
+    k.info('      |  | @| \              || o|O | @|')
+    k.info("      |o |  |,'\       ,   ,'\"|  |  |  |  hjw")
+    k.info("     vV\|/vV|`-'\\  ,---\   | \Vv\hjwVv\//v")
+    k.info('                _) )    `. \ /')
+    k.info('               (__/       ) )')
+    k.info('                         (_/')
 	
 end
 
@@ -219,26 +205,6 @@ if k.sioc.ok then
 	k.info("chargement de overload.lua")
 	dofile(lfs.writedir().."/Scripts/overload.lua")
     k.info("KatzePit prêt ! Que le Miaou soit avec vous")
-    k.info('         *                  *')
-    k.info('             __                *')
-    k.info("          ,db'    *     *")
-    k.info('         ,d8/       *        *    *')
-    k.info('         888')
-    k.info('         `db\       *     *')
-    k.info('           `o`_                    **')
-    k.info('      *               *   *    _      *')
-    k.info('            *                 / )')
-    k.info('         *    (\__/) *       ( (  *')
-    k.info('       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.')
-    k.info('      | @|  ={      }= | @|  / / | @|o |')
-    k.info('     _j__j__j_)     `-------/ /__j__j__j_')
-    k.info('     ________(               /___________')
-    k.info('      |  | @| \              || o|O | @|')
-    k.info("      |o |  |,'\       ,   ,'\"|  |  |  |  hjw")
-    k.info("     vV\|/vV|`-'\\  ,---\   | \Vv\hjwVv\//v")
-    k.info('                _) )    `. \ /')
-    k.info('               (__/       ) )')
-    k.info('                         (_/')
 else
 	k.info("erreur lors de la tentative de connexion à SIOC")
 end
