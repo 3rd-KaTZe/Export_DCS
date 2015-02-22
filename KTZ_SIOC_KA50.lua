@@ -2,7 +2,7 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.export.ka50.slow = function(self)
+k.export.ka50.slow = function()
 	k.debug("ka50.slow")
     
 	-- Récupération des données à lire --------------------
@@ -331,7 +331,7 @@ k.export.ka50.slow = function(self)
 			
 end
 
-k.export.ka50.fast = function(self)
+k.export.ka50.fast = function()
     k.debug('ka50 fast')
 
 	-- Récupération des données à lire --------------------

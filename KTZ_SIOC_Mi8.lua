@@ -2,7 +2,7 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.export.mi8.slow = function(self)
+k.export.mi8.slow = function()
 	k.debug("mi8.export.low")
 	
 	
@@ -329,7 +329,7 @@ k.export.mi8.slow = function(self)
 		
 end
 
-k.export.mi8.fast = function(self)
+k.export.mi8.fast = function()
 	k.debug("mi8.export.fast")
 
 	 -- Récupération des données à lire --------------------
