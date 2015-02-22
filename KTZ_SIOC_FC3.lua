@@ -2,7 +2,7 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.fc3.weapon_init = function(self)
+k.fc3.weapon_init = function()
 	local pylone
 	--logData(" Mise à zero du panel armement")
 			
@@ -16,7 +16,7 @@ k.fc3.weapon_init = function(self)
 	end
 end
 	
-k.export.fc3.slow = function(self)
+k.export.fc3.slow = function()
 	if LoGetIndicatedAirSpeed() ~= nil then
 			
 		-- ============== Horloge de Mission ============================================================		
@@ -60,14 +60,14 @@ k.export.fc3.slow = function(self)
 		
 		-- Scan du Pylone sélectionné ---------------------------------------------------------------------
 		local pylone_selec = _PayloadInfo.CurrentStation  -- Pylone selectionné
-		local quantite_selec = 0 -- Quantité de munition dispo. (utilisé pour déclancher le chrono de tir de SIOC)
+--		local quantite_selec = 0 -- Quantité de munition dispo. (utilisé pour déclancher le chrono de tir de SIOC)
 		
 		k.sioc.send(1108,pylone_selec)
 		
 		if pylon_selec~= 0 then
 				if _PayloadInfo.Stations[pylone_selec]~= nil then 
 							
-					quantite_selec = _PayloadInfo.Stations[pylone_selec].count
+					local quantite_selec = _PayloadInfo.Stations[pylone_selec].count
 					k.sioc.send(1109,quantite_selec)
 					
 				end
@@ -110,7 +110,7 @@ k.export.fc3.slow = function(self)
 			for pylone=1,13 do
 				if _PayloadInfo.Stations[pylone]~=nil then
 					local type_arme = _PayloadInfo.Stations[pylone].weapon
-					local type_arme_num = tonumber(type_arme.level1..type_arme.level2..type_arme.level3..type_arme.level4)
+--					local type_arme_num = tonumber(type_arme.level1..type_arme.level2..type_arme.level3..type_arme.level4)
 					local type_1 = tonumber(type_arme.level1)
 					local type_2 = tonumber(type_arme.level2)
 					local type_3 = tonumber(type_arme.level3)
@@ -204,7 +204,7 @@ k.export.fc3.slow = function(self)
 				local RF = (_MCP.RadarFailure and 1 or 0);
 				local GF = (_MCP.GearFailure and 1 or 0);
 				local HF = (_MCP.HydraulicsFailure and 1 or 0);
-				local FTD = (_MCP.FuelTankDamage and 1 or 0);
+--				local FTD = (_MCP.FuelTankDamage and 1 or 0);
 			
 			
 			local Alarm = 555555555 + HF * 10000000 + GF * 1000000 + RF * 100000 + EOSF * 10000 + ACMF * 1000 + APF * 100 + LEF * 10 + REF
@@ -248,7 +248,7 @@ k.export.fc3.slow = function(self)
 	
 end
 
-k.export.fc3.fast = function(self)
+k.export.fc3.fast = function()
 	if LoGetIndicatedAirSpeed() ~= nil then
 					
 		-- ============== Parametres de Vol ===============================================================
@@ -305,7 +305,7 @@ k.export.fc3.fast = function(self)
 		local myXCoord, myZCoord
 		if LoGetPlayerPlaneId() then
 			local objPlayer = LoGetObjectById(LoGetPlayerPlaneId())
-			myXCoord, myZCoord = k.common.export.getXYCoords(objPlayer.LatLongAlt.Lat, objPlayer.LatLongAlt.Long)
+			myXCoord, myZCoord = k.common.getXYCoords(objPlayer.LatLongAlt.Lat, objPlayer.LatLongAlt.Long)
 			
 			-- k.sioc.send("13",objPlayer.Subtype)--ok
 			-- k.sioc.send("14",obj.Country)
@@ -346,4 +346,4 @@ k.export.fc3.fast = function(self)
 	
 end	
 
-k.log("export FC3 chargés")
+k.info("KTZ_SIOC_FC3 chargé")

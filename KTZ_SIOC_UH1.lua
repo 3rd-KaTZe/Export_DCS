@@ -249,4 +249,4 @@ k.export.uh1.fast = function(self)
 		-- ============== Position de l'Avion ===============================================================		
 end
 
-k.log("export Huey chargés")
+k.info("KTZ_SIOC_UH1 chargé")

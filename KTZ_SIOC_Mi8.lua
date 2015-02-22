@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 k.export.mi8.slow = function(self)
-	k.log("mi8.export.low")
+	k.debug("mi8.export.low")
 	
 	
 	-- Attention !!!!!!!! pour boucle lente, le nom est différent que boucle rapide : Device(0) >> MainPanel
@@ -299,7 +299,7 @@ k.export.mi8.slow = function(self)
 
 		-- UV-26 -------------------------------------------------------------------		
 		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
-		local uv26 = k.common.export.uv26()
+		local uv26 = k.common.uv26()
 		local luv = string.len (uv26)
 						
 		if luv == 0 then 
@@ -330,7 +330,7 @@ k.export.mi8.slow = function(self)
 end
 
 k.export.mi8.fast = function(self)
-	k.log("mi8.export.fast")
+	k.debug("mi8.export.fast")
 
 	 -- Récupération des données à lire --------------------
 		-- Attention !!!!!!!! pour boucle rapide, le nom est différent que boucle lente : Device(0) >> lMainPanel
@@ -458,4 +458,4 @@ k.export.mi8.fast = function(self)
 		
 	end	
 	
-k.log("export Mi8 chargés")
+k.info("KTZ_SIOC_Mi8 chargé")

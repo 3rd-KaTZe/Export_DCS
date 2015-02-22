@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 k.export.ka50.slow = function(self)
-	k.log("ka50.slow")
+	k.debug("ka50.slow")
     
 	-- Récupération des données à lire --------------------
 	local MainPanel = GetDevice(0)
@@ -267,7 +267,7 @@ k.export.ka50.slow = function(self)
 	
 	
 	-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
-	local uv26 = k.common.export.uv26()
+	local uv26 = k.common.uv26()
 	if uv26 then 
 		k.sioc.send(1040,5000 + uv26)
 	end
@@ -332,7 +332,7 @@ k.export.ka50.slow = function(self)
 end
 
 k.export.ka50.fast = function(self)
-    k.log('ka50 fast')
+    k.debug('ka50 fast')
 
 	-- Récupération des données à lire --------------------
 	local lMainPanel = GetDevice(0)
@@ -442,7 +442,7 @@ end
 k.export.ka50.get_weapon = function()
 -- Fonction de lecture du nombre de munitions restantes
 
-	local weapon_data = k.common.export.parse_indication(6)
+	local weapon_data = k.common.parse_indication(6)
 			if not weapon_data then
 				local emptyline = 0 --string.format("%20s", "") -- 20 spaces
 				--local emptyline = "miaou"
@@ -459,7 +459,7 @@ end
 k.export.ka50.pvi800 = function()
 -- Fonction de l'afficheur PVI
 
-	local pvi_data = k.common.export.parse_indication(5)
+	local pvi_data = k.common.parse_indication(5)
 			if not pvi_data then
 				--local emptyline = string.format("%20s", "") -- 20 spaces
 				local emptyline = 0 --"miaou"
@@ -479,7 +479,7 @@ end
 k.export.ka50.get_abris = function ()
 -- fonction de lecture des codes des 5 boutons de l'Abris
 
-	local abris_data = k.common.export.parse_indication(3)
+	local abris_data = k.common.parse_indication(3)
 			if not abris_data then
 				local emptyline = 0 --"Miaou"
 				--local emptyline = string.format("%20s", "") -- 20 spaces
@@ -498,4 +498,4 @@ k.export.ka50.get_abris = function ()
 			end
 end
 
-k.log("export KA50 chargés")
+k.info("KTZ_SIOC_KA50 chargé")
