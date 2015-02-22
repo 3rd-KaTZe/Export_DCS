@@ -45,7 +45,7 @@ k.make_log_file = function()
 	-- création, si nécessaire, di fichier de log
 	if not k.debug_file then
 		-- création du fichier log si nécessaire
-		local p = k.dir.logs.."/KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv"
+		local p = lfs.writedir().."/Logs/KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv"
        		k.debug_file = io.open(p, "w")
 		-- Ecriture de l'entête dans le fichier
 		if k.debug_file then
@@ -137,7 +137,7 @@ k.mission_start = function()
 		k.debug("SIOC est connecté")
 		if k.exportFC3done then
 			k.debug("remise à zéro du panel d'armement de FC3")
-			k.fc3.weapon_init()
+			k.export.fc3.weapon_init()
 		end
 		k.debug("envoi à SIOC de l'heure de début de mission")
 		k.sioc.send(41,k.loop.start_time)

@@ -2,7 +2,7 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.fc3.weapon_init = function()
+k.export.fc3.weapon_init = function()
 	local pylone
 	--logData(" Mise à zero du panel armement")
 			
@@ -103,7 +103,7 @@ k.export.fc3.slow = function()
 			-- le weapon panel type a changé, on le scan
 			
 			-- Reset du panel armement et du nombre de fuel tank
-			k.fc3.weapon_init()
+			k.export.fc3.weapon_init()
 			local tank_nb = 0
 			
 			-- Scan du panel armement et envoi à SIOC
