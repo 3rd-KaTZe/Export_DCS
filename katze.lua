@@ -216,8 +216,29 @@ if k.sioc.ok then
 	k.loop.next_sample.slow = k.loop.current_time + k.loop.sample.slow
 	k.loop.next_sample.fps = k.loop.current_time + k.loop.sample.fps
 
-	k.debug("chargement de overload.lua")
+	k.info("chargement de overload.lua")
 	dofile(lfs.writedir().."/Scripts/overload.lua")
+    k.info("KatzePit prêt ! Que le Miaou soit avec vous")
+    k.info('         *                  *')
+    k.info('             __                *')
+    k.info("          ,db'    *     *")
+    k.info('         ,d8/       *        *    *')
+    k.info('         888')
+    k.info('         `db\       *     *')
+    k.info('           `o`_                    **')
+    k.info('      *               *   *    _      *')
+    k.info('            *                 / )')
+    k.info('         *    (\__/) *       ( (  *')
+    k.info('       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.')
+    k.info('      | @|  ={      }= | @|  / / | @|o |')
+    k.info('     _j__j__j_)     `-------/ /__j__j__j_')
+    k.info('     ________(               /___________')
+    k.info('      |  | @| \              || o|O | @|')
+    k.info("      |o |  |,'\       ,   ,'\"|  |  |  |  hjw")
+    k.info("     vV\|/vV|`-'\\  ,---\   | \Vv\hjwVv\//v")
+    k.info('                _) )    `. \ /')
+    k.info('               (__/       ) )')
+    k.info('                         (_/')
 else
 	k.info("erreur lors de la tentative de connexion à SIOC")
 end
