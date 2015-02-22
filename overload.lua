@@ -35,16 +35,16 @@ LuaExportActivityNextEvent = function(t)
 			k.current_aircraft = myInfo.Name
 			if k.current_aircraft == "Ka-50" then
 				k.log("remplacement des boucles fast & slow par celles du Kamov")
-				k.loop.fast = k.ka50.export.fast
-				k.loop.slow = k.ka50.export.slow
+				k.loop.fast = k.export.ka50.fast
+				k.loop.slow = k.export.ka50.slow
 			elseif k.current_aircraft == "Mi-8MT" then
 				k.log("remplacement des boucles fast & slow par celles du gros veau")
-				k.loop.fast = k.mi8.export.fast
-				k.loop.slow = k.mi8.export.slow
+				k.loop.fast = k.export.mi8.fast
+				k.loop.slow = k.export.mi8.slow
 			elseif k.current_aircraft == "UH-1H" then
 				k.log("remplacement des boucles fast & slow par celles du Huey")
-				k.loop.fast = k.uh1.export.fast
-				k.loop.slow = k.uh1.export.slow
+				k.loop.fast = k.export.uh1.fast
+				k.loop.slow = k.export.uh1.slow
 			end		
 		end
 	elseif not k.exportFC3done then
@@ -52,8 +52,8 @@ LuaExportActivityNextEvent = function(t)
 		-- encore nécessaire ?
 		k.exportFC3done = true
 		k.log("remplacement des boucles fast & slow par celles de FC3")
-		k.loop.fast = k.fc3.export.fast
-		k.loop.slow = k.fc3.export.slow
+		k.loop.fast = k.export.fc3.fast
+		k.loop.slow = k.export.fc3.slow
 	else
 		k.log("lDevice n'est pas une table et FC3 est déjà initialisé")
 	end

@@ -9,22 +9,14 @@ k.loop = {} -- boucles d'export
 k.loop = {}
 k.loop.fast = nil
 k.loop.slow = nil
-k.ka50 = {}
-k.ka50.export = {}
-k.mi8 = {}
-k.mi8.export = {}
-k.uh1 = {}
-k.uh1.export = {}
-k.fc3 = {}
-k.fc3.export = {}
-k.loop.sample = {}
-k.loop.sample.fast = nil
-k.loop.sample.slow = nil
-k.loop.sample.fps = nil
-k.loop.next_sample = {}
-k.loop.next_sample.fast = nil
-k.loop.next_sample.slow = nil
-k.loop.next_sample.fps = nil
+k.export = {
+    ka50 = {},
+    mi8 = {},
+    uh1 = {},
+    fc3 = {}
+}
+k.loop.sample = {fast=0.1, slow=0.5, fps=5}
+k.loop.next_sample = {fast=0, slow=0, fps=0}
 k.loop.start_time = nil
 k.loop.current_time = nil
 k.loop.fps_counter = 0
@@ -38,47 +30,54 @@ end
 -------------------------------------------------------------------------------
 -- Logging & debug
 k.debug = true
-k.log_file = nil -- fichier log
-k.log = function (message)
+k.log_file = nil
 
-	-- Création du fichier de log des communication serveur, s'il n'existe pas
-	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
-	--
-	if k.debug then
-		
-		if not k.log_file then
-			-- création du fichier log si nécessaire
-       			k.log_file = io.open(lfs.writedir().."Logs\\KatzePit\\KaTZPitLog_Flight_date_"..os.date("%Y%m%d-%H%M")..".csv", "w")
-				
-			-- Ecriture de l'entète dans le fichier
-			if k.log_file then
-				k.log_file:write("*********************************************;\n")
-				k.log_file:write("*     Fichier Log des Communications SIOC   *;\n")
-				k.log_file:write("*     Par KaTZe  -  http://www.3rd-wing.net *;\n")
-				k.log_file:write("*     Version DCS-FC3  du 02/02/2015        *;\n")
-				k.log_file:write("*********************************************;\n\n")
-			end
-			
-		end
-	
-		-- Ecriture des données dans le fichier existant
+k.make_log_file = function()
+	-- création, si nécessaire, di fichier de log
+	if not k.log_file then
+		-- création du fichier log si nécessaire
+		local p = k.dir.logs.."/KTZ-SIOC5010_ComLog-"..os.date("%Y%m%d-%H%M")..".csv"
+       		k.log_file = io.open(p, "w")
+		-- Ecriture de l'entête dans le fichier
 		if k.log_file then
-			k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n")
+			k.log_file:write("*********************************************;\n")
+			k.log_file:write("*     Fichier Log des Communications SIOC   *;\n")
+			k.log_file:write("*     Par KaTZe  -  http://www.3rd-wing.net *;\n")
+			k.log_file:write("*     Version FC3  du 02/02/2015            *;\n")
+			k.log_file:write("*********************************************;\n\n")
+		else
+			env.info("KTZ_PIT: erreur lors de la création du fichier log: "..p)
 		end
 	end
 end
 
-k.log("module de logging chargé")
+k.log = function (message)
+	-- Création du fichier de log des communication serveur, s'il n'existe pas
+	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
+	--
+	if k.debug then
+		k.make_log_file()
+		-- Ecriture des données dans le fichier existant
+		if k.log_file then
+			k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n")
+		end
+		-- Ecriture dans "dcs.log"
+		env.info("KTZ_PIT: "..message)
+	end
+end
 
+k.info = function(message)
 
--- k.log("remplacement de la fonction \"dofile\" par une version loggée")
--- old_dofile = dofile
--- new_dofile = function(p)
--- 	k.log("chargement du fichier "..(p or ""))
--- 	old_dofile(p)
--- end
--- dofile = new_dofile ()
-
+	-- fonction d'information, prévue pour être appelée beaucoup moins souvent que "k.log()"
+	-- ne dépend pas de "k.debug", active en permanence
+	k.make_log_file()
+	-- Ecriture des données dans le fichier existant
+	if k.log_file then
+		k.log_file:write(string.format(" %s ; %s",os.clock(),message),"\n")
+	end
+	-- Ecriture dans "dcs.log"
+	env.info("KTZ_PIT: "..message)
+end
 -------------------------------------------------------------------------------
 -- Fichier de configuration
 k.log("chargement du fichier de configuration")
@@ -97,6 +96,7 @@ k.log("intervalle FPS: "..k.config.fps)
 
 
 dofile(lfs.writedir().."Scripts\\sioc.lua")
+dofile(lfs.writedir().."Scripts\\common.lua")
 
 
 k.exportFC3done = false

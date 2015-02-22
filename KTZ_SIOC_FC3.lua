@@ -16,7 +16,7 @@ k.fc3.weapon_init = function(self)
 	end
 end
 	
-k.fc3.export.slow = function(self)
+k.export.fc3.slow = function(self)
 	if LoGetIndicatedAirSpeed() ~= nil then
 			
 		-- ============== Horloge de Mission ============================================================		
@@ -248,7 +248,7 @@ k.fc3.export.slow = function(self)
 	
 end
 
-k.fc3.export.fast = function(self)
+k.export.fc3.fast = function(self)
 	if LoGetIndicatedAirSpeed() ~= nil then
 					
 		-- ============== Parametres de Vol ===============================================================
