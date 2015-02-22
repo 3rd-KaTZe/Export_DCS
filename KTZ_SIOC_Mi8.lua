@@ -2,8 +2,8 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.mi8.export.slow = function(self)
-	k.log("mi8.export.low")
+k.export.mi8.slow = function()
+	k.debug("mi8.export.low")
 	
 	
 	-- Attention !!!!!!!! pour boucle lente, le nom est différent que boucle rapide : Device(0) >> MainPanel
@@ -299,7 +299,7 @@ k.mi8.export.slow = function(self)
 
 		-- UV-26 -------------------------------------------------------------------		
 		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
-		local uv26 = k.common.export.uv26()
+		local uv26 = k.common.uv26()
 		local luv = string.len (uv26)
 						
 		if luv == 0 then 
@@ -329,8 +329,8 @@ k.mi8.export.slow = function(self)
 		
 end
 
-k.mi8.export.fast = function(self)
-	k.log("mi8.export.fast")
+k.export.mi8.fast = function()
+	k.debug("mi8.export.fast")
 
 	 -- Récupération des données à lire --------------------
 		-- Attention !!!!!!!! pour boucle rapide, le nom est différent que boucle lente : Device(0) >> lMainPanel
@@ -458,4 +458,4 @@ k.mi8.export.fast = function(self)
 		
 	end	
 	
-k.log("export Mi8 chargés")
+k.info("KTZ_SIOC_Mi8 chargé")

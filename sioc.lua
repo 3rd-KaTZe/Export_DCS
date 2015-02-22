@@ -1,22 +1,20 @@
--------------------------------------------------------------------------------
--- Initialisation de SIOC
-k.sioc.ok = false -- "true" si le socket SIOC est connecté
-k.sioc.socket = require("socket") -- socket SIOC client
-k.sioc.buffer = {} -- tampon SIOC
+
+
+
 
 k.sioc.connect = function () -- fonction de connection à sioc
 	
-	k.log("sioc_connect()")
+	k.debug("sioc_connect()")
 	-- on retombe sur les valeurs par défaut si on ne les trouve pas
-	host = k.config.sioc.ip or "127.0.0.1"
-    port = k.config.sioc.port or 8092
-	k.log("sioc_connect: ip:"..host.." port:"..port)
+	local host = k.sioc.ip or "127.0.0.1"
+    local port = k.sioc.port or 8092
+	k.debug("sioc_connect: ip:"..host.." port:"..port)
 	
-	k.log("sioc_connect: ouverture du socket")
+	k.debug("sioc_connect: ouverture du socket")
 	k.sioc.socket = socket.try(socket.connect(host, port)) -- connect to the listener socket
-	k.log("sioc_connect: socket.tcp-nodelay: true")
+	k.debug("sioc_connect: socket.tcp-nodelay: true")
 	k.sioc.socket:setoption("tcp-nodelay",true) -- set immediate transmission mode
-	k.log("sioc_connect: socket.timeout: 0.1")
+	k.debug("sioc_connect: socket.timeout: 0.1")
 	k.sioc.socket:settimeout(.01) -- set the timeout for reading the socket)
    
 ------------------------------------------------------------------------
@@ -25,37 +23,39 @@ k.sioc.connect = function () -- fonction de connection à sioc
 -- 	0002 = Commande spéciale										  --
 ------------------------------------------------------------------------
 
-	inputs = {}
-	inputs [1]=1
-	inputs [2]=2
+	local inputs = {
+        [1] = 1,
+        [2] = 2,
+    }
 	
 	local x, i
     	local s = ""
     
-	k.log("sioc_connect: création du handshake de SIOC")
-	for x,i in pairs(inputs)
+	k.debug("sioc_connect: création du handshake de SIOC")
+	for x,_ in pairs(inputs)
 	do
-	    s = s..x..":"
+	    --noinspection StringConcatenationInLoops
+        s = s..x..":"
 	end
-	k.log("sioc_connect: handshake SIOC: "..s)
+	k.debug("sioc_connect: handshake SIOC: "..s)
 	
-	k.log("sioc_connect: envoi du handshake à SIOC")
+	k.debug("sioc_connect: envoi du handshake à SIOC")
 	socket.try(k.sioc.socket:send("Arn.Inicio:"..s.."\n"))
     	
 	k.sioc.contact = ("Arn.Inicio:"..s.."\n")
 	k.sioc.msg = "INIT-->;" .. k.sioc.contact
-	k.log("sioc_connect: contact: "..k.sioc.contact)
-	k.log("sioc_connect: msg: "..k.sioc.msg)
+	k.debug("sioc_connect: contact: "..k.sioc.contact)
+	k.debug("sioc_connect: msg: "..k.sioc.msg)
 	k.sioc.ok = true
 end
 
 k.sioc.send = function (strAttribut,valeur)
 
 		-- Option possible : Décalage des exports vers une plage SIOC
-		-- Indiquer dans siocConfig.lua la plage désirée
+		-- Indiquer dans katze_config.lua la plage désirée
 		-- newAtt = tonumber(strAttribut) + siocConfig.plageSioc
-		k.log("attrib: "..strAttribut)
-		k.log("valeur: "..valeur)
+		k.debug("attrib: "..strAttribut)
+		k.debug("valeur: "..valeur)
 		
 		local strNew = tostring(strAttribut)
 		
@@ -68,25 +68,25 @@ k.sioc.send = function (strAttribut,valeur)
 			socket.try(k.sioc.socket:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
 			local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
 			-- Log du message envoyé
-			k.log(messageEnvoye)
+			k.debug(messageEnvoye)
 		end		
 end
 
 k.sioc.receive = function ()
-	k.log("sioc.receive()")
+	k.debug("sioc.receive()")
 	
 	-- Check for data/string from the SIOC server on the socket
-    --k.log("*** Fonction recupInfo activated","\n")
+    --k.debug("*** Fonction recupInfo activated","\n")
 	
 	-- socket.try(c:send("Arn.Resp"))
 	local messageRecu = k.sioc.socket:receive()
-    k.log(tostring(messageRecu))
+    k.debug(tostring(messageRecu))
 	if messageRecu then
 		
 		local messagelog = "IN-->;".. tostring(messageRecu)
-		k.log(messagelog)
+		k.debug(messagelog)
 		
-		local s,l,typeMessage = string.find(messageRecu,"(Arn.%w+)");
+		local _,_,typeMessage = string.find(messageRecu,"(Arn.%w+)");
 		typeMessage = tostring(typeMessage);
         
 		------------------------------------------------------------
@@ -108,26 +108,26 @@ k.sioc.receive = function ()
 
 			-- (message type par exemple :1=3:0=23:6=3456)
 			local debut,fin,message = string.find(messageRecu,"([%d:=-]+)")
-			-- k.log(message)
+			-- k.debug(message)
 			-- longueur du message
 			local longueur
 			longueur = fin - debut
-			--k.log(longueur)
+			--k.debug(longueur)
 			-- découpe du message en commande et envoi à DCS
 						
 			local commande,Schan,chan,Svaleur,valeur,i,a,b,c,d,e,f,lim,device,bouton,typbouton,val
 			lim = 0
 
 			while lim < longueur do
-				a,b,commande = string.find(message,"([%d=-]+)", lim)
-				--k.log(commande)
-				c,d,Schan = string.find(commande, "([%d-]+)")
+				_,b,commande = string.find(message,"([%d=-]+)", lim)
+				--k.debug(commande)
+				_,d,Schan = string.find(commande, "([%d-]+)")
 				chan = tonumber(Schan)
-				--k.log(string.format(" Offset = %.0f",chan,"\n"))
-				e,f,Svaleur = string.find(commande, "([%d-]+)",d+1)
+				--k.debug(string.format(" Offset = %.0f",chan,"\n"))
+				_,_,Svaleur = string.find(commande, "([%d-]+)",d+1)
 								
 				valeur = tonumber(Svaleur)
-				--k.log(string.format(" Valeur = %.0f",valeur,"\n"))
+				--k.debug(string.format(" Valeur = %.0f",valeur,"\n"))
 				
 				
 -----------------------------------------------------------------------------
@@ -160,13 +160,13 @@ k.sioc.receive = function ()
 					typbouton = tonumber(string.sub(Svaleur,1,1))
 					device = tonumber(string.sub(Svaleur,2,3))
 					bouton = tonumber(string.sub(Svaleur,4,6))
-					pas = tonumber(string.sub(Svaleur,7,7))
+					local pas = tonumber(string.sub(Svaleur,7,7))
 					val = tonumber(string.sub(Svaleur,8,8))
 				
-					--k.log(string.format(" Device = %.0f",device,"\n"))
-					--k.log(string.format(" Bouton = %.0f",bouton,"\n"))
-					--k.log(string.format(" Type = %.0f",typbouton,"\n"))
-					--k.log(string.format(" Valeur = %.0f",val,"\n"))
+					--k.debug(string.format(" Device = %.0f",device,"\n"))
+					--k.debug(string.format(" Bouton = %.0f",bouton,"\n"))
+					--k.debug(string.format(" Type = %.0f",typbouton,"\n"))
+					--k.debug(string.format(" Valeur = %.0f",val,"\n"))
 					
 					-----------------------------------------------------------------
 					-- Type 1 : Simple On/Off
@@ -254,7 +254,9 @@ k.sioc.receive = function ()
 			end
 			
 		else
-			-- k.log("---Log: SIOC Message Incorrect ; non type Arn.Resp ; Message Ignoré -----", "\n")
+			-- k.debug("---Log: SIOC Message Incorrect ; non type Arn.Resp ; Message Ignoré -----", "\n")
 		end
     end
 end
+
+k.info("sioc.lua chargé")

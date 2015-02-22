@@ -2,7 +2,7 @@
 --    KaTZ-Pit FC3 functions repo 									  --
 ------------------------------------------------------------------------
 
-k.uh1.export.slow = function(self)
+k.export.uh1.slow = function()
 	 -- Attention !!!!!!!! pour boucle lente, le nom est différent que boucle rapide : Device(0) >> MainPanel
 		local MainPanel = GetDevice(0)
 		-- Test de la précence de Device 0 , comme table  valide
@@ -149,7 +149,7 @@ k.uh1.export.slow = function(self)
 		
 end
 
-k.uh1.export.fast = function(self)
+k.export.uh1.fast = function()
 	    		
 	-- Récupération des données à lire --------------------
 		-- Attention !!!!!!!! pour boucle rapide, le nom est différent que boucle lente : Device(0) >> lMainPanel
@@ -249,4 +249,4 @@ k.uh1.export.fast = function(self)
 		-- ============== Position de l'Avion ===============================================================		
 end
 
-k.log("export Huey chargés")
+k.info("KTZ_SIOC_UH1 chargé")
