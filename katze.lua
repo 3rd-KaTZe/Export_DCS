@@ -38,7 +38,7 @@ end
 
 -------------------------------------------------------------------------------
 -- Logging & debug
-k.debug = true
+k.debug_enabled = true
 k.debug_file = nil
 
 k.make_log_file = function()
@@ -64,7 +64,7 @@ k.debug = function (message)
 	-- Création du fichier de log des communication serveur, s'il n'existe pas
 	-- Format , KTZ-SIOC3000_ComLog-yyyymmdd-hhmm.csv
 	--
-	if k.debug then
+	if k.debug_enabled then
 		k.make_log_file()
 		-- Ecriture des données dans le fichier existant
 		if k.debug_file then
@@ -149,12 +149,12 @@ k.mission_start = function()
 end
 
 k.mission_end = function()
-	k.debug("  ","\n")
-	k.debug("--- Rapport de Vol ---" ,"\n")
-	k.debug(string.format(" Mission Start Time (secondes) = %.0f",k.loop.start_time,"\n"))
-	k.debug(string.format(" Sampling Period 1 = %.1f secondes",k.loop.sample.fast,"\n"))
-	k.debug(string.format(" Sampling Period 2 = %.1f secondes",k.loop.sample.slow,"\n"))
-	k.debug(string.format(" Sampling Period FPS = %.1f secondes",k.loop.sample.fps,"\n"))
+	k.info("  ","\n")
+	k.info("--- Rapport de Vol ---" ,"\n")
+	k.info(string.format(" Mission Start Time (secondes) = %.0f",k.loop.start_time,"\n"))
+	k.info(string.format(" Sampling Period 1 = %.1f secondes",k.loop.sample.fast,"\n"))
+	k.info(string.format(" Sampling Period 2 = %.1f secondes",k.loop.sample.slow,"\n"))
+	k.info(string.format(" Sampling Period FPS = %.1f secondes",k.loop.sample.fps,"\n"))
 	-- imprimer l'histogramme FPS
 	k.loop.fps_histo = {}
 	k.loop.fps_histo[10] = k.loop.fps[10] / k.loop.fps.total * 100
@@ -166,20 +166,20 @@ k.mission_end = function()
 	k.loop.fps_histo[70] = k.loop.fps[70] / k.loop.fps.total * 100
 	
 	-- log des résultats
-	k.debug(string.format(" Total Number of Frames = %.0f",k.loop.fps.total,"\n"))
-	k.debug(string.format(" Flight Duration = %.0f secondes",k.loop.current_time,"\n"))
-	k.debug("  ","\n")
-	k.debug(string.format("*** Average FPS =  %.1f ",k.loop.fps.total/k.loop.current_time,"\n"))
-	k.debug("  ","\n")
-	k.debug(string.format("*** FPS < 10      = %.1f percent",k.loop.fps_histo[10],"\n"))
-	k.debug(string.format("*** 10 < FPS < 20 = %.1f percent",k.loop.fps_histo[20],"\n"))
-	k.debug(string.format("*** 20 < FPS < 30 = %.1f percent",k.loop.fps_histo[30],"\n"))
-	k.debug(string.format("*** 30 < FPS < 40 = %.1f percent",k.loop.fps_histo[40],"\n"))
-	k.debug(string.format("*** 40 < FPS < 50 = %.1f percent",k.loop.fps_histo[50],"\n"))
-	k.debug(string.format("*** 50 < FPS < 60 = %.1f percent",k.loop.fps_histo[60],"\n"))
-	k.debug(string.format("*** 60 < FPS      = %.1f percent",k.loop.fps_histo[70],"\n"))
-	k.debug("  ","\n")
-	k.debug("Miaou à tous !!!")
+	k.info(string.format(" Total Number of Frames = %.0f",k.loop.fps.total,"\n"))
+	k.info(string.format(" Flight Duration = %.0f secondes",k.loop.current_time,"\n"))
+	k.info("  ","\n")
+	k.info(string.format("*** Average FPS =  %.1f ",k.loop.fps.total/k.loop.current_time,"\n"))
+	k.info("  ","\n")
+	k.info(string.format("*** FPS < 10      = %.1f percent",k.loop.fps_histo[10],"\n"))
+	k.info(string.format("*** 10 < FPS < 20 = %.1f percent",k.loop.fps_histo[20],"\n"))
+	k.info(string.format("*** 20 < FPS < 30 = %.1f percent",k.loop.fps_histo[30],"\n"))
+	k.info(string.format("*** 30 < FPS < 40 = %.1f percent",k.loop.fps_histo[40],"\n"))
+	k.info(string.format("*** 40 < FPS < 50 = %.1f percent",k.loop.fps_histo[50],"\n"))
+	k.info(string.format("*** 50 < FPS < 60 = %.1f percent",k.loop.fps_histo[60],"\n"))
+	k.info(string.format("*** 60 < FPS      = %.1f percent",k.loop.fps_histo[70],"\n"))
+	k.info("  ","\n")
+	k.info("Miaou à tous !!!")
 	
 	
 	
