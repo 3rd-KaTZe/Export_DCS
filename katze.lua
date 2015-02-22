@@ -147,15 +147,30 @@ k.mission_end = function()
 	k.info("  ","\n")
     for i=10, 70, 10 do
         local fps = k.loop.fps[i] / k.loop.fps.total * 100
-        k.info(string.format("*** "..(i-10).." < FPS"..(" < "..(i+10) and i < 70 or "").." = %.1f percent", fps,"\n"))
+        k.info(string.format("*** "..(i-10).." < FPS"..((" < "..(i+10)) and i < 70 or "").." = %.1f percent", fps,"\n"))
     end
 	k.info("  ","\n")
 	k.info("Miaou à tous !!!")
-	
-	
-	
-	
-	
+    k.info('         *                  *')
+    k.info('             __                *')
+    k.info("          ,db'    *     *")
+    k.info('         ,d8/       *        *    *')
+    k.info('         888')
+    k.info('         `db\       *     *')
+    k.info('           `o`_                    **')
+    k.info('      *               *   *    _      *')
+    k.info('            *                 / )')
+    k.info('         *    (\__/) *       ( (  *')
+    k.info('       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.')
+    k.info('      | @|  ={      }= | @|  / / | @|o |')
+    k.info('     _j__j__j_)     `-------/ /__j__j__j_')
+    k.info('     ________(               /___________')
+    k.info('      |  | @| \              || o|O | @|')
+    k.info("      |o |  |,'\       ,   ,'\"|  |  |  |  hjw")
+    k.info("     vV\|/vV|`-'\\  ,---\   | \Vv\hjwVv\//v")
+    k.info('                _) )    `. \ /')
+    k.info('               (__/       ) )')
+    k.info('                         (_/')
 	
 end
 
@@ -190,26 +205,6 @@ if k.sioc.ok then
 	k.info("chargement de overload.lua")
 	dofile(lfs.writedir().."/Scripts/overload.lua")
     k.info("KatzePit prêt ! Que le Miaou soit avec vous")
-    k.info('         *                  *')
-    k.info('             __                *')
-    k.info("          ,db'    *     *")
-    k.info('         ,d8/       *        *    *')
-    k.info('         888')
-    k.info('         `db\       *     *')
-    k.info('           `o`_                    **')
-    k.info('      *               *   *    _      *')
-    k.info('            *                 / )')
-    k.info('         *    (\__/) *       ( (  *')
-    k.info('       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.')
-    k.info('      | @|  ={      }= | @|  / / | @|o |')
-    k.info('     _j__j__j_)     `-------/ /__j__j__j_')
-    k.info('     ________(               /___________')
-    k.info('      |  | @| \              || o|O | @|')
-    k.info("      |o |  |,'\       ,   ,'\"|  |  |  |  hjw")
-    k.info("     vV\|/vV|`-'\\  ,---\   | \Vv\hjwVv\//v")
-    k.info('                _) )    `. \ /')
-    k.info('               (__/       ) )')
-    k.info('                         (_/')
 else
 	k.info("erreur lors de la tentative de connexion à SIOC")
 end
