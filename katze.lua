@@ -28,7 +28,7 @@ k.loop.start_time = nil
 k.loop.current_time = nil
 k.loop.fps = {
     counter = 0,
-    total = 0
+    total = 0,
 }
 
 k.file_exists = function(p)
@@ -130,6 +130,8 @@ k.mission_start = function()
 	k.loop.fps[50] = 0
 	k.loop.fps[60] = 0
 	k.loop.fps[70] = 0
+    k.loop.fps.counter = 0
+    k.loop.fps.total = 0
 	-- Mise à zero du panel armement dans SIOC
 	
 	k.debug("test de la connexion avec SIOC")
