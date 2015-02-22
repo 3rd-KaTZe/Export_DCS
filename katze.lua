@@ -30,7 +30,10 @@ k.loop.current_time = nil
 k.loop.fps_counter = 0
 k.loop.fps_tot = 0
 
-
+k.file_exists = function(p)
+	local f=io.open(p,'r')
+	if f~=nil then io.close(f) return  true else return false end
+end
 
 -------------------------------------------------------------------------------
 -- Logging & debug
@@ -94,7 +97,6 @@ k.log("intervalle FPS: "..k.config.fps)
 
 
 dofile(lfs.writedir().."Scripts\\sioc.lua")
-dofile(lfs.writedir().."Scripts\\low_level.lua")
 
 
 k.exportFC3done = false
