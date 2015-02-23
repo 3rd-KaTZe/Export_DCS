@@ -132,7 +132,7 @@ k.mission_start = function()
 end
 
 k.mission_end = function()
-	k.info("  ","\n")
+	k.info("\n")
 	k.info("--- Rapport de Vol ---" ,"\n")
 	k.info(string.format(" Début de la mission : %.0f secondes",k.loop.start_time,"\n"))
 	k.info(string.format(" Boucle rapide       : %.1f secondes",k.loop.sample.fast,"\n"))
@@ -142,9 +142,9 @@ k.mission_end = function()
 	-- log des résultats
 	k.info(string.format(" Total Number of Frames = %.0f",k.loop.fps.total,"\n"))
 	k.info(string.format(" Flight Duration = %.0f secondes",k.loop.current_time,"\n"))
-	k.info("  ","\n")
+	k.info("\n")
 	k.info(string.format("*** Average FPS =  %.1f ",k.loop.fps.total/k.loop.current_time,"\n"))
-	k.info("  ","\n")
+	k.info("\n")
     for i=10, 70, 10 do
         local fps = k.loop.fps[i] / k.loop.fps.total * 100
         k.info(string.format("*** "..(i>10 and (i-10).." < " or "     ").."FPS".. (i < 70 and " < "..(i) or "     ") .." = %.1f percent", fps,"\n"))
