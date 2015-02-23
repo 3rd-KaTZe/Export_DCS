@@ -85,8 +85,13 @@ LuaExportAfterNextFrame = function()
 		
 		if k.sioc.ok and k.loop.fast ~= nil then
 			k.debug("loop.fast")
-			k.sioc.receive() -- Reception Commande
-			k.loop.fast()  -- Export séquence rapide
+            k.debug("réception des données SIOC")
+            if not pcall(sioc.receive) then
+                k.info("erreur lors de la réception des données en provenance de SIOC")
+            end
+            if not pcall(k.loop.fast) then
+                k.info("erreur dans la boucle rapide")
+			end
 		end
 		
 		-- calcul de la date de fin du prochain intervalle de temps
@@ -97,7 +102,9 @@ LuaExportAfterNextFrame = function()
 	if k.loop.current_time >= k.loop.next_sample.slow then --*************************************** Boucle Lente
 		
 		if k.sioc.ok and k.loop.slow ~= nil then
-			k.loop.slow() -- Export séquence lente
+            if not pcall(k.loop.slow) then
+                k.info("erreur dans la boucle lente")
+			end
 		end
 		-- calcul de la date de fin du prochain intervalle de temps
 		k.loop.next_sample.slow = k.loop.current_time + k.loop.sample.slow
