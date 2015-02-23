@@ -149,7 +149,7 @@ k.mission_end = function()
         local fps = k.loop.fps[i] / k.loop.fps.total * 100
         k.info(string.format("*** "..(i>10 and (i-10).." < " or "     ").."FPS".. (i < 70 and " < "..(i) or "     ") .." = %.1f percent", fps,"\n"))
     end
-	k.info("  ","\n")
+	k.info("\n")
 	k.info("Miaou à tous !!!")
     k.info('         *                  *')
     k.info('             __                *')
