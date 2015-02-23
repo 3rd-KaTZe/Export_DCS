@@ -192,8 +192,7 @@ for i=1, #k.file, 1 do
 end
 
 k.info("tentative de connexion à SIOC")
-k.sioc.connect()
-if k.sioc.ok then
+if pcall(k.sioc.connect) == 0 and k.sioc.ok = true then
 	k.info("SIOC connecté")
 	k.loop.start_time = LoGetMissionStartTime()
 	k.loop.current_time = LoGetModelTime()
