@@ -281,9 +281,37 @@ k.export.ka50.slow = function()
 		k.sioc.send(171,pvi1)
 		k.sioc.send(172,pvi2)
 		k.sioc.send(173, 50005000 + pvi3 * 10000 + pvi4)
+		
+	-- Export du clavier PVI800
+	local PVI_315 = math.floor(MainPanel:get_argument_value(315)* 10 + 0.2) -- Touche WPT
+	local PVI_519 = math.floor(MainPanel:get_argument_value(519)* 10 + 0.2) -- Touche INU RERUN
+	local PVI_316 = math.floor(MainPanel:get_argument_value(316)* 10 + 0.2)-- Touche FIX PNT
+	local PVI_520 = math.floor(MainPanel:get_argument_value(520)* 10 + 0.2) -- Touche INU PREC
+	local PVI_317 = math.floor(MainPanel:get_argument_value(317)* 10 + 0.2) -- Touche AIR FIED
+	local PVI_521 = math.floor(MainPanel:get_argument_value(521)* 10 + 0.2) -- Touche INU NORM
+	local PVI_318 = math.floor(MainPanel:get_argument_value(318)* 10 + 0.2) -- Touche NAV TGT
+	local PVI_522 = math.floor(MainPanel:get_argument_value(522)* 10 + 0.2) -- Touche INIT PNT
+	k.sioc.send(175, 55555555 + PVI_315 * 10000000 + PVI_519 * 1000000 + PVI_316 * 100000 + PVI_520 * 10000 + PVI_317 * 1000 + PVI_521 * 100 + PVI_318 * 10 + PVI_522)	
 	
+	-- Export du clavier PVI800
+	local PVI_313 = math.floor(MainPanel:get_argument_value(313)* 10 + 0.2) -- Touche ENTER
+	local PVI_314 = math.floor(MainPanel:get_argument_value(314)* 10 + 0.2) -- Touche RESET
+	local PVI_319 = math.floor(MainPanel:get_argument_value(319)* 10 + 0.2) -- Touche SELF COOR
+	local PVI_320 = math.floor(MainPanel:get_argument_value(320)* 10 + 0.2) -- Touche DTA DH
+	local PVI_321 = math.floor(MainPanel:get_argument_value(321)* 10 + 0.2) -- Touche WIND
+	local PVI_322 = math.floor(MainPanel:get_argument_value(322)* 10 + 0.2) -- Touche T-HEAD
+	local PVI_323 = math.floor(MainPanel:get_argument_value(323)* 10 + 0.2) -- Touche HEAD
+	k.sioc.send(176, 5555555 + PVI_313 * 1000000 + PVI_314 * 100000 + PVI_319 * 10000 + PVI_320 * 1000 + PVI_321 * 100 + PVI_322 * 10 + PVI_323)	
+	
+	-- Export des switches du PVI800
+	local PVI_Inu = MainPanel:get_argument_value(325) -- Switch INU
+	local PVI_DLink = MainPanel:get_argument_value(326) -- Switch DLink
+	local PVI_Select = math.floor(MainPanel:get_argument_value(324)* 10 + 0.2) -- Selecteur
+	k.sioc.send(177,550 + PVI_Inu * 100 + PVI_DLink * 10 + PVI_Select)
 
-	
+	k.sioc.send(178,MainPanel:get_argument_value(324)*1000)
+	k.sioc.send(179,MainPanel:get_argument_value(320)*1000)
+
 	
 	-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
 	local uv26 = k.common.uv26()
