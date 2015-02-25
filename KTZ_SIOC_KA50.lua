@@ -98,6 +98,25 @@ k.export.ka50.slow = function()
 
 	
 	-- ============== Parametres Electrique  ===========================================================
+	-- Panel Light --------------------------------------------------------------
+	-- Position des switch Cockpit Lighting, Projo
+	-- ============== Status Light et NavLight ========================================================
+		local Light_S1 = MainPanel:get_argument_value(1001)		-- Position Switch Eclairage interne
+		local Light_S2 = MainPanel:get_argument_value(300)		-- Position Switch Panel
+		local Light_S3 = math.floor(MainPanel:get_argument_value(146)*10 + 0.2)		-- Position Switch Nav Light
+		local Light_S4 = math.floor(MainPanel:get_argument_value(297)*10 + 0.2)		-- Position Switch Form Light
+		local Light_S5 = MainPanel:get_argument_value(296)		-- Position Switch Blade Tip
+		local Light_S6 = MainPanel:get_argument_value(228)		-- Position Switch Strobe
+		local Light_S7 = math.floor(MainPanel:get_argument_value(382))		-- Position Switch Landing L onoff, 1=Allumé , 0.5=off , 0=retracté (export > on ne fait pas la diff entre off et retract)
+		local Light_S8 = MainPanel:get_argument_value(383)		-- Position Switch Landing projo select
+		
+		local Light_SW = 55555555 + Light_S7 * 10000000 + Light_S8 * 1000000  + Light_S1 * 100000 + Light_S2 * 10000 + Light_S3 * 1000 + Light_S4 * 100 + Light_S5 * 10 + Light_S6
+		k.sioc.send(520,Light_SW)								-- Position Switch Lights	
+		
+		k.sioc.send(522,MainPanel:get_argument_value(382) * 1000)								-- Position Switch DC
+		k.sioc.send(523,MainPanel:get_argument_value(383) * 1000)	
+		
+		
 	-- Panel DC --------------------------------------------------------------
 	-- Regroupement des Voyants AC et DC dans deux valeurs export à 8 chiffres	
 	
