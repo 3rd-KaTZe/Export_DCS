@@ -51,6 +51,7 @@ LuaExportActivityNextEvent = function(t)
 		k.debug("lDevice n'est pas une table et FC3 n'est pas initialisé")
 		-- encore nécessaire ?
 		k.exportFC3done = true
+		k.current_aircraft = "FC3"
 		k.debug("remplacement des boucles fast & slow par celles de FC3")
 		k.loop.fast = k.export.fc3.fast
 		k.loop.slow = k.export.fc3.slow
