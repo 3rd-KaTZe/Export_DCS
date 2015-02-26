@@ -200,16 +200,17 @@ k.export.ka50.slow = function()
 	local Datalink_C = MainPanel:get_argument_value(161)*10-- Clear
 	local Datalink_I = MainPanel:get_argument_value(150)*10-- Ingress
 	local Datalink_S = MainPanel:get_argument_value(159)*10-- SendMem
+	
+	local Datalink_S1 = math.floor(MainPanel:get_argument_value(328)*10 + 0.2) -- Selecteur ID
+	local Datalink_S2 = math.floor(MainPanel:get_argument_value(329)*10 + 0.2) -- Selecteur Data	
 
 	local Datalink_L1 = 5555 + Datalink_T1 * 1000 + Datalink_T2 * 100 + Datalink_T3 * 10 + Datalink_T4
 	local Datalink_L2 = 55555 + Datalink_W1 * 10000 + Datalink_W2 * 1000 + Datalink_W3 * 100 + Datalink_W4 * 10 + Datalink_W5
-	local Datalink_L3 = 5555 + Datalink_V * 1000 + Datalink_C * 100 + Datalink_I * 10 + Datalink_S
+	local Datalink_L3 = 555555+ Datalink_S1 * 100000 + Datalink_S2 * 10000   + Datalink_V * 1000 + Datalink_C * 100 + Datalink_I * 10 + Datalink_S
 	k.sioc.send(1002,Datalink_L1)
 	k.sioc.send(1004,Datalink_L2)
-	k.sioc.send(1005,Datalink_L3)
+	k.sioc.send(1006,Datalink_L3)
 
-	
-	
 	-- Scan du Canon sélectionné ------------------------------------------------------------------------
 	
 	-- Pilototo --------------------------------------------------------------------------------
