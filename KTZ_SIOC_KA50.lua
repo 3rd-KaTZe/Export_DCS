@@ -48,7 +48,6 @@ k.export.ka50.slow = function()
 	k.sioc.send(250,Oil_T_Eng)		-- Engine Oil Temp (L,R)
 	k.sioc.send(255,Oil_T_GB)		-- GearBox Oil Temp 	
 
-	
 			
 	-- ============== Parametres Fuel (lents) et démarrage ==============================================
 	k.sioc.send(404,MainPanel:get_argument_value(137)* 800)-- Fuel Internal Forward : max 80		-- OK
@@ -91,30 +90,27 @@ k.export.ka50.slow = function()
 	local CO = 555 + BRot * 100 + COL * 10 + COR
 	k.sioc.send(220,CO)	-- Rotor Break + Levier CutOff Left Right
 
-	
 	k.sioc.send(356,MainPanel:get_argument_value(416) * 10000)-- Selecteur demarrage moteur (zero=APU, 1000=Left, 2000=Right, 3000=Up maintenance)
 	k.sioc.send(358,MainPanel:get_argument_value(415) * 10000)-- Type demarrage  (=Start, 1000=Vent, 2000=Crabo)
-			
-
 	
 	-- ============== Parametres Electrique  ===========================================================
 	-- Panel Light --------------------------------------------------------------
 	-- Position des switch Cockpit Lighting, Projo
 	-- ============== Status Light et NavLight ========================================================
-		local Light_S1 = MainPanel:get_argument_value(1001)		-- Position Switch Eclairage interne
-		local Light_S2 = MainPanel:get_argument_value(300)		-- Position Switch Panel
-		local Light_S3 = math.floor(MainPanel:get_argument_value(146)*10 + 0.2)		-- Position Switch Nav Light
-		local Light_S4 = math.floor(MainPanel:get_argument_value(297)*10 + 0.2)		-- Position Switch Form Light
-		local Light_S5 = MainPanel:get_argument_value(296)		-- Position Switch Blade Tip
-		local Light_S6 = MainPanel:get_argument_value(228)		-- Position Switch Strobe
-		local Light_S7 = math.floor(MainPanel:get_argument_value(382))		-- Position Switch Landing L onoff, 1=Allumé , 0.5=off , 0=retracté (export > on ne fait pas la diff entre off et retract)
-		local Light_S8 = MainPanel:get_argument_value(383)		-- Position Switch Landing projo select
+	local Light_S1 = MainPanel:get_argument_value(1001)		-- Position Switch Eclairage interne
+	local Light_S2 = MainPanel:get_argument_value(300)		-- Position Switch Panel
+	local Light_S3 = math.floor(MainPanel:get_argument_value(146)*10 + 0.2)		-- Position Switch Nav Light
+	local Light_S4 = math.floor(MainPanel:get_argument_value(297)*10 + 0.2)		-- Position Switch Form Light
+	local Light_S5 = MainPanel:get_argument_value(296)		-- Position Switch Blade Tip
+	local Light_S6 = MainPanel:get_argument_value(228)		-- Position Switch Strobe
+	local Light_S7 = math.floor(MainPanel:get_argument_value(382))		-- Position Switch Landing L onoff, 1=Allumé , 0.5=off , 0=retracté (export > on ne fait pas la diff entre off et retract)
+	local Light_S8 = MainPanel:get_argument_value(383)		-- Position Switch Landing projo select
 		
-		local Light_SW = 55555555 + Light_S7 * 10000000 + Light_S8 * 1000000  + Light_S1 * 100000 + Light_S2 * 10000 + Light_S3 * 1000 + Light_S4 * 100 + Light_S5 * 10 + Light_S6
-		k.sioc.send(520,Light_SW)								-- Position Switch Lights	
+	local Light_SW = 55555555 + Light_S7 * 10000000 + Light_S8 * 1000000  + Light_S1 * 100000 + Light_S2 * 10000 + Light_S3 * 1000 + Light_S4 * 100 + Light_S5 * 10 + Light_S6
+	k.sioc.send(520,Light_SW)								-- Position Switch Lights	
 		
-		k.sioc.send(522,MainPanel:get_argument_value(382) * 1000)								-- Position Switch DC
-		k.sioc.send(523,MainPanel:get_argument_value(383) * 1000)	
+	k.sioc.send(522,MainPanel:get_argument_value(382) * 1000)								-- Position Switch DC
+	k.sioc.send(523,MainPanel:get_argument_value(383) * 1000)	
 		
 		
 	-- Panel DC --------------------------------------------------------------
@@ -122,13 +118,10 @@ k.export.ka50.slow = function()
 	
 	local Elec_S1 = MainPanel:get_argument_value(264)		-- Position Switch Batterie L
 	local Elec_S2 = MainPanel:get_argument_value(543)		-- Position Switch Batterie R
-	--k.sioc.send(80,MainPanel:get_argument_value(264) * 1000)-- Position Switch Batterie L
-	--k.sioc.send(81,MainPanel:get_argument_value(543) * 1000)-- Position Switch Batterie R
-	local Elec_S7 = MainPanel:get_argument_value(262)		-- Position Switch Ground DC
-	--k.sioc.send(82,MainPanel:get_argument_value(262) * 1000)-- Position Switch Ground DC
 	
+	local Elec_S7 = MainPanel:get_argument_value(262)		-- Position Switch Ground DC
+		
 	local Elec_V4 = MainPanel:get_argument_value(261)		-- Voyant Ground DC
-	--k.sioc.send(83,MainPanel:get_argument_value(261) * 1000)-- Voyant Ground DC
 	
 	-- Panel AC --------------------------------------------------------------
 
@@ -284,12 +277,15 @@ k.export.ka50.slow = function()
 		k.sioc.send(1014,50005000+ wpncnt * 10000 + cannoncnt)
 	end
 	
-	-- Export des switch réglage cannon ----------------------------------------------------------------------
+	-- Export des réglages Shkval --------------------------------------------------------------------------------
+	local SH_Hud = MainPanel:get_argument_value(409) -- Switch Hud Light
+	local SH_Black = MainPanel:get_argument_value(404) -- Switch TV Black
+	local SH_HMS = math.floor(MainPanel:get_argument_value(405)* 10 + 0.5) -- Rotactor HMS Bright
+	local SH_Brt = math.floor(MainPanel:get_argument_value(406)* 10 + 0.5) -- Rotactor Shkval Bright
+	local SH_Cont = math.floor(MainPanel:get_argument_value(407)* 10 + 0.5) -- Rotactor Shkval Contrast
 	
 	
-	
-	
-	
+	k.sioc.send(1038,55000000 + SH_Hud * 10000000 + SH_Black * 1000000 + SH_HMS * 10000 + SH_Brt * 100 + SH_Cont)
 	
 	-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
 	local pvi1, pvi2, pvi3, pvi4 = k.export.ka50.pvi800()
@@ -298,9 +294,9 @@ k.export.ka50.slow = function()
 	if not pvi3 then pvi3 = 0 end
 	if not pvi4 then pvi4 = 0 end
 	
-		k.sioc.send(171,pvi1)
-		k.sioc.send(172,pvi2)
-		k.sioc.send(173, 50005000 + pvi3 * 10000 + pvi4)
+	k.sioc.send(171,pvi1)
+	k.sioc.send(172,pvi2)
+	k.sioc.send(173, 50005000 + pvi3 * 10000 + pvi4)
 		
 	-- Export du clavier PVI800
 	local PVI_315 = math.floor(MainPanel:get_argument_value(315)* 10 + 0.2) -- Touche WPT
@@ -346,13 +342,7 @@ k.export.ka50.slow = function()
 	local Num_SW = math.floor(MainPanel:get_argument_value(37) * 10 + 0.2)  -- 0 ou 0.1
 	
 	k.sioc.send(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
-	
-	k.sioc.send(1046,MainPanel:get_argument_value(496)*1000)
 		
-		
-	
-	
-	
 	
 	-- ============== Lecture de l'Abris =========================================================================	
 			
@@ -413,12 +403,7 @@ k.export.ka50.fast = function()
 	lMainPanel:update_arguments()
 	
 	-- ============== Clock =========================================================================
-	-- Inutile, time est récupéré avec LoGetModelTime()
-	--k.sioc.send(20,lMainPanel:get_argument_value(167)*1000)
-	--k.sioc.send(21,lMainPanel:get_argument_value(48)*1000)
-	--k.sioc.send(22,lMainPanel:get_argument_value(173)*1000)
-	--k.sioc.send(23,lMainPanel:get_argument_value(177)*1000)
-	--k.sioc.send(22,lMainPanel:get_argument_value(70)*60)
+	
 	
 	-- ============== Parametres de Vol ===============================================================
 	k.sioc.send(102,lMainPanel:get_argument_value(51)*370) 	-- IAS max speed 350km/hr -- linéaire export valeur vraie
@@ -449,8 +434,6 @@ k.export.ka50.fast = function()
 	local WP_Dist_100 = math.floor(lMainPanel:get_argument_value(117)*10)
 	
 	k.sioc.send(162,WP_Dist_100*1000 + WP_Dist_10*100 + WP_Dist_1*10) -- Waypoint Distance 0.1km
-			
-	
 	
 	-- ============== Parametres ILS ==================================================================
 	
@@ -478,8 +461,6 @@ k.export.ka50.fast = function()
 	k.sioc.send(213,lMainPanel:get_argument_value(235)*50 + 50)		-- mode moteur : gradué de 5 à 10 ( * 5 +5)
 	-- Variables non groupées pour les simpit		
 	
-	
-	
 	-- ============== Parametres APU ===================================================================
 	k.sioc.send(300,50005000 + lMainPanel:get_argument_value(6) * 900)-- Température APU : max 900°
 	
@@ -487,16 +468,11 @@ end
 
 k.export.ka50.abris_ref = function(item)
 
-	-- liste complète , problème caractère /\
-	-- local abrismenu = {"/\","\/",">",">>","ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST"	,"OPTION","PLAN","PLAN","SAVE","SCALE -","SCALE +","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT"}
-	
 
 	local abrismenu = {"ACTIV","ADD","ADD LIN","ADD PNT","ARC","AUTO","CALC","CANCEL","CLEAR","CTRL","DELETE","DRAW","EDIT","ENTER","ERBL","FPL","GNSS","HSI","INFO","LOAD","MAP","MARKER","MENU","MOVE","NAME","NAV","NE","REST","OPTION","PLAN","PLAN","SAVE","SCALE-","SCALE+","SEARCH","SELECT","SETUP","SUSP","SYST","TEST","TGT VS","TO","TYPE","USER","VNAV","VNAV TO","WPT",""}
   
 	for ii,xx in pairs(abrismenu) do
 		if item == xx then
-		--logCom(item)
-		--logCom(ii)
 		return ii 
 		end
 	end
@@ -550,7 +526,7 @@ k.export.ka50.get_abris = function ()
 			if not abris_data then
 				local emptyline = 0 --"Miaou"
 				--local emptyline = string.format("%20s", "") -- 20 spaces
-				-- On retourne ligne vide pour les 5 bouton
+				-- On retourne ligne vide pour les 5 boutons
 				return emptyline, emptyline, emptyline, emptyline, emptyline
 			
 			else 
