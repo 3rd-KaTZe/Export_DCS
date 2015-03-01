@@ -212,10 +212,13 @@ k.export.ka50.slow = function()
 	local AP_H = math.floor(MainPanel:get_argument_value(332)*10)		-- H : HDG
 	local AP_A = math.floor(MainPanel:get_argument_value(333)*10)		-- B : Alt
 	local AP_FD = math.floor(MainPanel:get_argument_value(334)*10)		--  : FD
+	local SW_baro = math.floor(MainPanel:get_argument_value(335))		--  : Switch PA-Alti Baro/Rad
+	local SW_hdgn = math.floor(MainPanel:get_argument_value(336))		--  : Switch PA-route : Heading/Course
+	
 
-	local AP = 55555 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
+	local AP = 5555555 + SW_baro * 1000000 + SW_hdgn * 100000 + AP_B * 10000 + AP_P * 1000 + AP_H * 100 + AP_A * 10 + AP_FD
 	k.sioc.send(552,AP)
-
+	
 	
 	local AP2_H = MainPanel:get_argument_value(175)		--  : Hover
 	local AP2_D = MainPanel:get_argument_value(172)		--  : Descente	
