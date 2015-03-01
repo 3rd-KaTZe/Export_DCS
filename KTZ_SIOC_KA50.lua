@@ -14,17 +14,14 @@ k.export.ka50.slow = function()
 	end
 	
 			
-	-- ============== Valeur Test ============================================================		
-	k.sioc.send(22,MainPanel:get_argument_value(277)*1000)		-- K : Fuel Qty Switch		
-	k.sioc.send(23,MainPanel:get_argument_value(191) * 1000)-- Position Collectif
-
+	-- ============== Valeur Alarme ============================================================		
+	k.sioc.send(580,MainPanel:get_argument_value(44))		-- MasterWarning		
+	
 	-- ============== Horloge de Mission ============================================================		
 	k.sioc.send(42,LoGetModelTime())-- Heure de la mission en secondes
 	k.sioc.send(48,MainPanel:get_argument_value(72)*43200)-- Flight Time en secondes (12hr * 60mn * 60sec)
 	k.sioc.send(52,MainPanel:get_argument_value(73)*1800)-- Chronometre en secondes (1 tour de cadran = 30mn * 60sec)
-
 	
-		
 	-- ============== Parametres Moteur (lents) ====================================================
 
 	local Oil_P_1 = math.floor(MainPanel:get_argument_value(252)*80)	-- Oil Pressure left gradué 0-8 kg/cm²
@@ -405,8 +402,12 @@ k.export.ka50.fast = function()
 	
 	lMainPanel:update_arguments()
 	
-	-- ============== Clock =========================================================================
+	-- ============== Position des Sticks =========================================================================
+	-- Stick Roll/pitch Position
+	k.sioc.send(80,50005000 + math.floor(lMainPanel:get_argument_value(71)*1000) * 10000 +  math.floor(lMainPanel:get_argument_value(74)*1000))
 	
+	-- Rudder + Cyclic
+	k.sioc.send(82,50005000 + math.floor(lMainPanel:get_argument_value(266)* -1000) * 10000 +  math.floor(lMainPanel:get_argument_value(104)*1000))
 	
 	-- ============== Parametres de Vol ===============================================================
 	k.sioc.send(102,lMainPanel:get_argument_value(51)*370) 	-- IAS max speed 350km/hr -- linéaire export valeur vraie
