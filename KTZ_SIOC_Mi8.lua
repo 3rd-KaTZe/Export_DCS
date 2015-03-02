@@ -292,10 +292,37 @@ k.export.mi8.slow = function()
 		
 		
 		-- ============== Status Armement ==================================================================
-
-		-- Scan du Canon sélectionné -------------------------------------------------------------------
-		-- Scan du Panel Armement ----------------------------------------------------------------------	
-
+		
+		local WpnMarm = MainPanel:get_argument_value(866)-- Master Arm Safety
+		local WpnMain = MainPanel:get_argument_value(575) -- Main Switch
+		local WpnPayld = math.floor(MainPanel:get_argument_value(719) * 10 + 0.2) -- Selection RRR,BBB,BBR,HBR,HBB,GUV
+		k.sioc.send(1018, 550 + WpnMarm * 100 + WpnMain * 10 + WpnPayld)
+		
+		local WpnUPK = MainPanel:get_argument_value(344) -- Selection Rocket , UPK (Gun)
+		local WpnRS468 = math.floor(MainPanel:get_argument_value(342) * 10 + 0.2) -- Rocket 4,8,16
+		local WpnRS1256 = math.floor(MainPanel:get_argument_value(343) * 10 + 0.2) -- Rocket 1256/Auto/34
+		local WpnRSLamp =  MainPanel:get_argument_value(566)
+		k.sioc.send(1022, 5555 + WpnUPK * 1000 + WpnRS468 * 100 + WpnRS1256*10 + WpnRSLamp)
+		
+		
+		
+		local WpnGuv1 = math.floor(MainPanel:get_argument_value(349) * 10 + 0.2) -- Selection GUV 800 or all
+		local WpnGuv2 = math.floor(MainPanel:get_argument_value(347) * 10 + 0.2) -- Selection GUV 622,624,800
+		local WpnGuv3 = MainPanel:get_argument_value(345) -- Selection GUV Cut Off
+		local WpnGuv4 = math.floor(MainPanel:get_argument_value(346) * 10 + 0.2) -- Selection GUV Burst lenght
+		local WpnGuvLamp =  MainPanel:get_argument_value(567)
+		k.sioc.send(1023, 55555 + WpnGuv1 * 10000 + WpnGuv2 * 1000 + WpnGuv3 * 100 + WpnGuv4 * 10 + WpnGuvLamp)
+				
+		-- Lamp Weapon Station
+		k.sioc.send(1016, 555555 + MainPanel:get_argument_value(555) * 100000 + MainPanel:get_argument_value(556) * 10000 + MainPanel:get_argument_value(557) * 1000 + MainPanel:get_argument_value(558) * 100 + MainPanel:get_argument_value(559) * 10 + MainPanel:get_argument_value(560))
+		
+		local WpnCNT1 = math.floor(MainPanel:get_argument_value(577) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(578) * 10 + 0.2)
+		local WpnCNT2 = math.floor(MainPanel:get_argument_value(580) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(581) * 10 + 0.2)
+		local WpnCNT3 = math.floor(MainPanel:get_argument_value(583) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(584) * 10 + 0.2)
+		k.sioc.send(1014, 555555 + WpnCNT1 * 10000 + WpnCNT2 * 100 + WpnCNT3)
+		
+		
+		
 
 		-- UV-26 -------------------------------------------------------------------		
 		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
