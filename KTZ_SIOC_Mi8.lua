@@ -345,8 +345,11 @@ k.export.mi8.fast = function()
 		lMainPanel:update_arguments()
 		
 		-- ============== Clock =========================================================================
-		-- Inutile, time est récupéré avec LoGetModelTime()
-		
+		-- ============== Position des Commandes de vol =========================================================================
+		-- Stick Roll/pitch Position
+		k.sioc.send(80,50005000 + math.floor(lMainPanel:get_argument_value(181)*1000) * 10000 +  math.floor(lMainPanel:get_argument_value(180)*-1000))
+		-- Rudder + Collective
+		k.sioc.send(82,50005000 + math.floor(lMainPanel:get_argument_value(266)* -1000) * 10000 +  math.floor(lMainPanel:get_argument_value(191)*1000))
 		
 		-- ============== Debug =========================================================================
 		k.sioc.send(20,lMainPanel:get_argument_value(342)*1000) 

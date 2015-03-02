@@ -402,11 +402,10 @@ k.export.ka50.fast = function()
 	
 	lMainPanel:update_arguments()
 	
-	-- ============== Position des Sticks =========================================================================
+	-- ============== Position des Commandes de vol =========================================================================
 	-- Stick Roll/pitch Position
 	k.sioc.send(80,50005000 + math.floor(lMainPanel:get_argument_value(71)*1000) * 10000 +  math.floor(lMainPanel:get_argument_value(74)*1000))
-	
-	-- Rudder + Cyclic
+	-- Rudder + Collective
 	k.sioc.send(82,50005000 + math.floor(lMainPanel:get_argument_value(266)* -1000) * 10000 +  math.floor(lMainPanel:get_argument_value(104)*1000))
 	
 	-- ============== Parametres de Vol ===============================================================

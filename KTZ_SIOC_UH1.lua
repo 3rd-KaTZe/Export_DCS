@@ -177,10 +177,14 @@ k.export.uh1.fast = function()
 
 		
 		-- ============== Clock =========================================================================
-		-- Inutile, time est récupéré avec LoGetModelTime()
-
+		
 		-- ============== Contrôle de l'appareil =========================================================================		
-				
+		-- ============== Position des Commandes de vol =========================================================================
+		-- Stick Roll/pitch Position
+		k.sioc.send(80,50005000 + math.floor(lMainPanel:get_argument_value(187)* 1000) * 10000 +  math.floor(lMainPanel:get_argument_value(186)*-1000))
+		-- Rudder + Collective
+		k.sioc.send(82,50005000 + math.floor(lMainPanel:get_argument_value(184)* 1000) * 10000 +  math.floor(lMainPanel:get_argument_value(200)*1000))
+		
 		-- ============== Parametres de Vol ===============================================================
 		k.sioc.send(102,lMainPanel:get_argument_value(117)*1000) 	-- IAS Badin
 
