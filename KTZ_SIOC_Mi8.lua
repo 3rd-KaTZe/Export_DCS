@@ -277,9 +277,9 @@ k.export.mi8.slow = function()
 		local ARKUD_S3 = MainPanel:get_argument_value(454)		-- Selection VHF UHF
 		local ARKUD_S4 = math.floor(MainPanel:get_argument_value(457) * 10 + 0.2)		-- Selecteur de Channel ajout de 0.2 pour pb arrondi
 		local ARKUD_S5 = math.floor(MainPanel:get_argument_value(455) * 9.3)		-- Bouton Volume
-		local ARKUD_S6 = MainPanel:get_argument_value(458)		-- Voyant 1
-		local ARKUD_S7 = MainPanel:get_argument_value(459)		-- Voyant 2
-		local ARKUD_S8 = MainPanel:get_argument_value(460)		-- Voyant 3
+		local ARKUD_S6 = MainPanel:get_argument_value(458)		-- Voyant Narrow
+		local ARKUD_S7 = MainPanel:get_argument_value(459)		-- Voyant Wide
+		local ARKUD_S8 = MainPanel:get_argument_value(460)		-- Voyant Pulse
 		
 				
 		local ARKUD = 55500555 + ARKUD_S8 * 10000000 + ARKUD_S7 * 10000000 + ARKUD_S6 * 1000000 + ARKUD_S5 * 10000 + ARKUD_S4 * 1000 + ARKUD_S3 * 100 + ARKUD_S2 * 10 + ARKUD_S1
@@ -292,34 +292,37 @@ k.export.mi8.slow = function()
 		
 		
 		-- ============== Status Armement ==================================================================
-		
+		-- Weapon - 1
 		local WpnMarm = MainPanel:get_argument_value(866)-- Master Arm Safety
 		local WpnMain = MainPanel:get_argument_value(575) -- Main Switch
 		local WpnPayld = math.floor(MainPanel:get_argument_value(719) * 10 + 0.2) -- Selection RRR,BBB,BBR,HBR,HBB,GUV
-		k.sioc.send(1018, 550 + WpnMarm * 100 + WpnMain * 10 + WpnPayld)
+		k.sioc.send(1021, 550 + WpnMarm * 100 + WpnMain * 10 + WpnPayld)
 		
+		-- Weapon - 2
 		local WpnUPK = MainPanel:get_argument_value(344) -- Selection Rocket , UPK (Gun)
-		local WpnRS468 = math.floor(MainPanel:get_argument_value(342) * 10 + 0.2) -- Rocket 4,8,16
-		local WpnRS1256 = math.floor(MainPanel:get_argument_value(343) * 10 + 0.2) -- Rocket 1256/Auto/34
+		local WpnRS468 = MainPanel:get_argument_value(342) -- Rocket 4,8,16
+		local WpnRS1256 = MainPanel:get_argument_value(343) -- Rocket 1256/Auto/34
 		local WpnRSLamp =  MainPanel:get_argument_value(566)
-		k.sioc.send(1022, 5555 + WpnUPK * 1000 + WpnRS468 * 100 + WpnRS1256*10 + WpnRSLamp)
+		k.sioc.send(1022, 5555555 + WpnUPK * 1000 + WpnRS468 * 100 + WpnRS1256*10 + WpnRSLamp)
 		
 		
-		
-		local WpnGuv1 = math.floor(MainPanel:get_argument_value(349) * 10 + 0.2) -- Selection GUV 800 or all
+		-- Weapon - 3
+		local WpnGuv1 = MainPanel:get_argument_value(349) -- Selection GUV 800 or all
 		local WpnGuv2 = math.floor(MainPanel:get_argument_value(347) * 10 + 0.2) -- Selection GUV 622,624,800
 		local WpnGuv3 = MainPanel:get_argument_value(345) -- Selection GUV Cut Off
 		local WpnGuv4 = math.floor(MainPanel:get_argument_value(346) * 10 + 0.2) -- Selection GUV Burst lenght
+		local WpnGuv5 = math.floor(MainPanel:get_argument_value(350) * 10 + 0.2) -- Charge 12.7
 		local WpnGuvLamp =  MainPanel:get_argument_value(567)
-		k.sioc.send(1023, 55555 + WpnGuv1 * 10000 + WpnGuv2 * 1000 + WpnGuv3 * 100 + WpnGuv4 * 10 + WpnGuvLamp)
+		k.sioc.send(1023, 5555500 + WpnGuvLamp * 1000000 + WpnGuv1 * 100000 + WpnGuv2 * 10000 + WpnGuv3 * 1000 + WpnGuv5 * 100 + WpnGuv4)
 				
-		-- Lamp Weapon Station
+		-- Lamp Weapon Station 1016
 		k.sioc.send(1016, 555555 + MainPanel:get_argument_value(555) * 100000 + MainPanel:get_argument_value(556) * 10000 + MainPanel:get_argument_value(557) * 1000 + MainPanel:get_argument_value(558) * 100 + MainPanel:get_argument_value(559) * 10 + MainPanel:get_argument_value(560))
 		
+		-- Weapon Ammo 1014
 		local WpnCNT1 = math.floor(MainPanel:get_argument_value(577) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(578) * 10 + 0.2)
 		local WpnCNT2 = math.floor(MainPanel:get_argument_value(580) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(581) * 10 + 0.2)
 		local WpnCNT3 = math.floor(MainPanel:get_argument_value(583) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(584) * 10 + 0.2)
-		k.sioc.send(1014, 555555 + WpnCNT1 * 10000 + WpnCNT2 * 100 + WpnCNT3)
+		k.sioc.send(1014, 5000000 + WpnCNT1 * 10000 + WpnCNT2 * 100 + WpnCNT3)
 		
 		
 		

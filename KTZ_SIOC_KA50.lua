@@ -260,7 +260,7 @@ k.export.ka50.slow = function()
 	local Laser = MainPanel:get_argument_value(435)
 	local Canonmov = math.floor(MainPanel:get_argument_value(431)*10 + 0.2)
 			
-	k.sioc.send(1022,5555555 + MasterSW * 1000000 + Train * 100000 + K041 * 10000 + HMS * 1000 + Autotrack * 100 + Laser * 10 + Canonmov)
+	k.sioc.send(1021,5555555 + MasterSW * 1000000 + Train * 100000 + K041 * 10000 + HMS * 1000 + Autotrack * 100 + Laser * 10 + Canonmov)
 	
 	-- Voyant du panel Arm Secondaire
 	local PA_aat = math.floor(MainPanel:get_argument_value(437)* 10 + 0.2) -- Touche Autoturn
@@ -269,7 +269,7 @@ k.export.ka50.slow = function()
 	local PA_movgnd = math.floor(MainPanel:get_argument_value(440)* 10 + 0.2) -- Touche Moving Ground Target
 	local PA_reset = math.floor(MainPanel:get_argument_value(441)* 10 + 0.2) -- Touche Reset
 	
-	k.sioc.send(1023,55555 + PA_aat * 10000 + PA_aaho * 1000 + PA_aa * 100 + PA_movgnd * 10 + PA_reset)
+	k.sioc.send(1022,55555 + PA_aat * 10000 + PA_aaho * 1000 + PA_aa * 100 + PA_movgnd * 10 + PA_reset)
 
 	-- Export des quantités Rocket et Canon ----------------------------------------------------------------------
 	local wpncnt, cannoncnt = k.export.ka50.get_weapon()
