@@ -57,17 +57,6 @@ k.common.parse_indication = function (indicator_id)
 	return ret
 end
 
-k.common.uv26 = function()
--- Fonction de lecture de l'afficheur de l'UV26
 
-	local UV26 = k.common.parse_indication(7)
-	if not UV26 then
-		local emptyline = 0
-		return emptyline
-	else 
-		local txt = UV26["txt_digits"]
-		return txt
-	end
-end
 
 k.info("common.lua chargé")

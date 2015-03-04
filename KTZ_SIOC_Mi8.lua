@@ -329,17 +329,11 @@ k.export.mi8.slow = function()
 
 		-- UV-26 -------------------------------------------------------------------		
 		-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
-		local uv26 = k.common.uv26()
-		local luv = string.len (uv26)
-						
-		if luv == 0 then 
-			uv26 = 0
+		local uv26 = k.export.mi8.uv26()
+		if uv26 then 
+			k.sioc.send(1040,5000 + uv26)
 		end
-		
-		k.sioc.send(1040,5000 + uv26)
-			
-		
-		
+				
 			local UV_On = math.floor(MainPanel:get_argument_value(910) + 0.2)  -- 0 ou 1
 			local LedLeft = MainPanel:get_argument_value(892)
 			local LedRight = MainPanel:get_argument_value(891)
@@ -348,11 +342,7 @@ k.export.mi8.slow = function()
 			
 			k.sioc.send(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
 			
-				
-				
-		
-		
-				
+			
 		-- ============== Module Alarme ==================================================================================		
 		
 		    
@@ -490,5 +480,18 @@ k.export.mi8.fast = function()
 		   		
 		
 	end	
+	
+k.export.mi8.uv26 = function()
+-- Fonction de lecture de l'afficheur de l'UV26
+
+	local UV26 = k.common.parse_indication(5)
+	if not UV26 then
+		local emptyline = 0
+		return emptyline
+	else 
+		local txt = UV26["txt_digits"]
+		return txt
+	end
+end	
 	
 k.info("KTZ_SIOC_Mi8 chargé")

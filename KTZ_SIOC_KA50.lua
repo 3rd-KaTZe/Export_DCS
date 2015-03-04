@@ -330,7 +330,7 @@ k.export.ka50.slow = function()
 
 	
 	-- Export de l'affichage de l'UV26 ----------------------------------------------------------------------
-	local uv26 = k.common.uv26()
+	local uv26 = k.export.ka50.uv26()
 	if uv26 then 
 		k.sioc.send(1040,5000 + uv26)
 	end
@@ -542,6 +542,19 @@ k.export.ka50.get_abris = function ()
 				return b1,b2,b3,b4,b5
 										
 			end
+end
+
+k.export.ka50.uv26 = function()
+-- Fonction de lecture de l'afficheur de l'UV26
+
+	local UV26 = k.common.parse_indication(7)
+	if not UV26 then
+		local emptyline = 0
+		return emptyline
+	else 
+		local txt = UV26["txt_digits"]
+		return txt
+	end
 end
 
 k.info("KTZ_SIOC_KA50 chargé")
