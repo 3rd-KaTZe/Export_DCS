@@ -303,7 +303,10 @@ k.export.mi8.slow = function()
 		local WpnRS468 = MainPanel:get_argument_value(342) -- Rocket 4,8,16
 		local WpnRS1256 = MainPanel:get_argument_value(343) -- Rocket 1256/Auto/34
 		local WpnRSLamp =  MainPanel:get_argument_value(566)
-		k.sioc.send(1022, 5555555 + WpnUPK * 1000 + WpnRS468 * 100 + WpnRS1256*10 + WpnRSLamp)
+		local GuvLamp1 = MainPanel:get_argument_value(586)
+		local GuvLamp2 = MainPanel:get_argument_value(587)
+		local GuvLamp3 = MainPanel:get_argument_value(588)
+		k.sioc.send(1022, 5555555 + GuvLamp1* 1000000 + GuvLamp2 * 100000 + GuvLamp3 * 10000 + WpnUPK * 1000 + WpnRS468 * 100 + WpnRS1256*10 + WpnRSLamp)
 		
 		
 		-- Weapon - 3
@@ -317,6 +320,9 @@ k.export.mi8.slow = function()
 				
 		-- Lamp Weapon Station 1016
 		k.sioc.send(1016, 555555 + MainPanel:get_argument_value(555) * 100000 + MainPanel:get_argument_value(556) * 10000 + MainPanel:get_argument_value(557) * 1000 + MainPanel:get_argument_value(558) * 100 + MainPanel:get_argument_value(559) * 10 + MainPanel:get_argument_value(560))
+		
+		-- Lamp FCD
+		k.sioc.send(1018, 5555 + MainPanel:get_argument_value(562) * 1000 + MainPanel:get_argument_value(563) * 100 + MainPanel:get_argument_value(564) * 10 + MainPanel:get_argument_value(565))
 		
 		-- Weapon Ammo 1014
 		local WpnCNT1 = math.floor(MainPanel:get_argument_value(577) * 10 + 0.2)*10 + math.floor(MainPanel:get_argument_value(578) * 10 + 0.2)
@@ -343,7 +349,16 @@ k.export.mi8.slow = function()
 			k.sioc.send(1042, 55555 + UV_On * 10000 + LedLeft * 1000 + LedRight * 100 + Num_SW * 10 + Side_SW)
 			
 			
-		-- ============== Module Alarme ==================================================================================		
+		-- ============== Value Test ==================================================================================	
+		k.sioc.send(10, MainPanel:get_argument_value(574))		
+		--k.sioc.send(11, MainPanel:get_argument_value(563))	
+		--k.sioc.send(12, MainPanel:get_argument_value(564))	
+		--k.sioc.send(13, MainPanel:get_argument_value(565))	
+		--k.sioc.send(14, MainPanel:get_argument_value(778))	
+		--k.sioc.send(15, MainPanel:get_argument_value(910))	
+		--k.sioc.send(16, MainPanel:get_argument_value(586))	
+		--k.sioc.send(17, MainPanel:get_argument_value(587))	
+		--k.sioc.send(18, MainPanel:get_argument_value(588))	
 		
 		    
 		
