@@ -61,15 +61,17 @@ k.sioc.send = function (strAttribut,valeur)
 		
 		local strValeur = string.format("%d",valeur);
 		
-		if (strValeur ~= k.sioc.buffer[strNew]) then
+		socket.try(k.sioc.socket:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
+		
+		--if (strValeur ~= k.sioc.buffer[strNew]) then
 			-- On stock la nouvelle valeur dans la table buffer
-			k.sioc.buffer[strNew] = strValeur ;
+			--k.sioc.buffer[strNew] = strValeur ;
 			-- Envoi de la nouvelle valeur
-			socket.try(k.sioc.socket:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
-			local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
+			--socket.try(k.sioc.socket:send(string.format("Arn.Resp:%s=%.0f:\n",strNew,strValeur)))
+			--local messageEnvoye = "OUT--> ;" .. (string.format("Arn.Resp:%s=%.0f:",strNew,strValeur))
 			-- Log du message envoyé
-			k.debug(messageEnvoye)
-		end		
+			--k.debug(messageEnvoye)
+		--end		
 end
 
 k.sioc.receive = function ()
