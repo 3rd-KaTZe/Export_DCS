@@ -288,15 +288,20 @@ k.export.ka50.slow = function()
 	k.sioc.send(1038,55000000 + SH_Hud * 10000000 + SH_Black * 1000000 + SH_HMS * 10000 + SH_Brt * 100 + SH_Cont)
 	
 	-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
-	local pvi1, pvi2, pvi3, pvi4 = k.export.ka50.pvi800()
+	local pvi1, pvi2, pvi3, pvi4, pvi5, pvi6, pvi7, pvi8 = k.export.ka50.pvi800()
 	if not pvi1 then pvi1 = 0 end
 	if not pvi2 then pvi2 = 0 end
 	if not pvi3 then pvi3 = 0 end
 	if not pvi4 then pvi4 = 0 end
+	if not pvi5 then pvi5 = 0 else pvi5 = 1 end
+	if not pvi6 then pvi6 = 0 else pvi6 = 1 end
+	if not pvi7 then pvi7 = 0 else pvi7 = 1 end
+	if not pvi8 then pvi8 = 0 else pvi8 = 1 end
+	
 	
 	k.sioc.send(171,pvi1)
 	k.sioc.send(172,pvi2)
-	k.sioc.send(173, 50005000 + pvi3 * 10000 + pvi4)
+	k.sioc.send(173, 5000000 + pvi5 * 100000 + pvi6 * 10000 + pvi7 * 1000 + pvi8 * 100 + pvi3 * 10 + pvi4)
 		
 	-- Export du clavier PVI800
 	local PVI_315 = math.floor(MainPanel:get_argument_value(315)* 10 + 0.2) -- Touche WPT
@@ -512,12 +517,18 @@ k.export.ka50.pvi800 = function()
 				return emptyline, emptyline
 			
 			else 
+				
 				local pvi_1 = pvi_data["txt_VIT"]
 				local pvi_2 = pvi_data["txt_NIT"]
 				local pvi_3 = pvi_data["txt_OIT_PPM"]
 				local pvi_4 = pvi_data["txt_OIT_NOT"]
+				local pvi_5 = pvi_data["txt_VIT_apostrophe1"]
+				local pvi_6 = pvi_data["txt_VIT_apostrophe2"]
+				local pvi_7 = pvi_data["txt_NIT_apostrophe1"]
+				local pvi_8 = pvi_data["txt_NIT_apostrophe2"]
 				
-				return pvi_1 , pvi_2 , pvi_3 , pvi_4
+				
+				return pvi_1 , pvi_2 , pvi_3 , pvi_4 , pvi_5 , pvi_6 , pvi_7 , pvi_8
 										
 			end
 end
