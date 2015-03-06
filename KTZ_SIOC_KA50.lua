@@ -289,8 +289,8 @@ k.export.ka50.slow = function()
 	
 	-- Export de l'affichage du PVI800 ----------------------------------------------------------------------
 	local pvi1, pvi2, pvi3, pvi4, pvi5, pvi6, pvi7, pvi8 = k.export.ka50.pvi800()
-	if not pvi1 then pvi1 = 0 end
-	if not pvi2 then pvi2 = 0 end
+	if not pvi1 then pvi1 = 999 end
+	if not pvi2 then pvi2 = 999 end
 	if not pvi3 then pvi3 = 0 end
 	if not pvi4 then pvi4 = 0 end
 	if not pvi5 then pvi5 = 0 else pvi5 = 1 end
@@ -301,7 +301,7 @@ k.export.ka50.slow = function()
 	
 	k.sioc.send(171,pvi1)
 	k.sioc.send(172,pvi2)
-	k.sioc.send(173, 5000000 + pvi5 * 100000 + pvi6 * 10000 + pvi7 * 1000 + pvi8 * 100 + pvi3 * 10 + pvi4)
+	k.sioc.send(173, 555500 + pvi5 * 100000 + pvi6 * 10000 + pvi7 * 1000 + pvi8 * 100 + pvi3 * 10 + pvi4)
 		
 	-- Export du clavier PVI800
 	local PVI_315 = math.floor(MainPanel:get_argument_value(315)* 10 + 0.2) -- Touche WPT
