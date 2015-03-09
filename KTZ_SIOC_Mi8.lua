@@ -15,7 +15,23 @@ k.export.mi8.slow = function()
 		MainPanel:update_arguments()
 		
 		-- ============== Valeur Test ============================================================		
-		--k.sioc.send(22,MainPanel:get_argument_value(277)*1000)		-- K : Fuel Qty Switch		
+		--k.sioc.send(22,MainPanel:get_argument_value(277)*1000)		-- K : Fuel Qty Switch
+
+		-- ============== Position de l'Avion ===============================================================		
+		local myXCoord, myZCoord
+		if LoGetPlayerPlaneId() then
+			local objPlayer = LoGetObjectById(LoGetPlayerPlaneId())
+			myXCoord, myZCoord = k.common.getXYCoords(objPlayer.LatLongAlt.Lat, objPlayer.LatLongAlt.Long)
+			
+			k.sioc.send(60,myXCoord)
+			k.sioc.send(62,myZCoord)
+			k.sioc.send(64,objPlayer.LatLongAlt.Lat*1000000)
+			k.sioc.send(66,objPlayer.LatLongAlt.Long*1000000)
+			
+			
+			k.sioc.send(110,objPlayer.LatLongAlt.Alt*100)--ok
+			
+		end		
 	
 		-- ============== Horloge de Mission ============================================================		
 		k.sioc.send(42,LoGetModelTime())-- Heure de la mission
@@ -277,12 +293,11 @@ k.export.mi8.slow = function()
 		local ARKUD_S3 = MainPanel:get_argument_value(454)		-- Selection VHF UHF
 		local ARKUD_S4 = math.floor(MainPanel:get_argument_value(457) * 10 + 0.2)		-- Selecteur de Channel ajout de 0.2 pour pb arrondi
 		local ARKUD_S5 = math.floor(MainPanel:get_argument_value(455) * 9.3)		-- Bouton Volume
-		local ARKUD_S6 = MainPanel:get_argument_value(458)		-- Voyant Narrow
-		local ARKUD_S7 = MainPanel:get_argument_value(459)		-- Voyant Wide
-		local ARKUD_S8 = MainPanel:get_argument_value(460)		-- Voyant Pulse
-		
-				
-		local ARKUD = 55500555 + ARKUD_S8 * 10000000 + ARKUD_S7 * 10000000 + ARKUD_S6 * 1000000 + ARKUD_S5 * 10000 + ARKUD_S4 * 1000 + ARKUD_S3 * 100 + ARKUD_S2 * 10 + ARKUD_S1
+		local ARKUD_S6 = math.floor(MainPanel:get_argument_value(458) + 0.3)		-- Voyant Narrow
+		local ARKUD_S7 = math.floor(MainPanel:get_argument_value(459) + 0.3)		-- Voyant Wide
+		local ARKUD_S8 = math.floor(MainPanel:get_argument_value(460) + 0.3)		-- Voyant Pulse
+								
+		local ARKUD = 55500555 + ARKUD_S8 * 10000000 + ARKUD_S7 * 1000000 + ARKUD_S6 * 100000 + ARKUD_S5 * 10000 + ARKUD_S4 * 1000 + ARKUD_S3 * 100 + ARKUD_S2 * 10 + ARKUD_S1
 		
 		k.sioc.send(660,ARKUD)   -- Variable Switch ARK-UD
 		

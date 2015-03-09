@@ -17,6 +17,22 @@ k.export.uh1.slow = function()
 		
 		k.sioc.send(42,LoGetModelTime())-- Heure de la mission
 		
+		-- ============== Position de l'Avion ===============================================================		
+		local myXCoord, myZCoord
+		if LoGetPlayerPlaneId() then
+			local objPlayer = LoGetObjectById(LoGetPlayerPlaneId())
+			myXCoord, myZCoord = k.common.getXYCoords(objPlayer.LatLongAlt.Lat, objPlayer.LatLongAlt.Long)
+			
+			k.sioc.send(60,myXCoord)
+			k.sioc.send(62,myZCoord)
+			k.sioc.send(64,objPlayer.LatLongAlt.Lat*1000000)
+			k.sioc.send(66,objPlayer.LatLongAlt.Long*1000000)
+			
+			
+			k.sioc.send(110,objPlayer.LatLongAlt.Alt*100)--ok
+			
+		end		
+		
 		-- ============== Parametres de Vol (lents) ====================================================
 
 		-- ADI

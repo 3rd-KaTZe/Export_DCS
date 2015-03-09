@@ -22,6 +22,24 @@ k.export.ka50.slow = function()
 	k.sioc.send(48,MainPanel:get_argument_value(72)*43200)-- Flight Time en secondes (12hr * 60mn * 60sec)
 	k.sioc.send(52,MainPanel:get_argument_value(73)*1800)-- Chronometre en secondes (1 tour de cadran = 30mn * 60sec)
 	
+	-- ============== Position de l'Avion ===============================================================		
+		local myXCoord, myZCoord
+		if LoGetPlayerPlaneId() then
+			local objPlayer = LoGetObjectById(LoGetPlayerPlaneId())
+			myXCoord, myZCoord = k.common.getXYCoords(objPlayer.LatLongAlt.Lat, objPlayer.LatLongAlt.Long)
+			
+			k.sioc.send(60,myXCoord)
+			k.sioc.send(62,myZCoord)
+			k.sioc.send(64,objPlayer.LatLongAlt.Lat*1000000)
+			k.sioc.send(66,objPlayer.LatLongAlt.Long*1000000)
+			
+			
+			k.sioc.send(110,objPlayer.LatLongAlt.Alt*100)--ok
+			
+		end		
+	
+	
+	
 	-- ============== Parametres Moteur (lents) ====================================================
 
 	local Oil_P_1 = math.floor(MainPanel:get_argument_value(252)*80)	-- Oil Pressure left gradué 0-8 kg/cm²
